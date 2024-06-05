@@ -1,0 +1,145 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Verdana;
+}
+
+header {
+  top: 0;
+  left: 0;
+  z-index: 99;
+  position: fixed;
+  background-color: black;
+  width: 100%;
+  padding: 15px 30px;
+  display: flex;
+  align-items: center;
+}
+
+.logo-container a {
+  display: flex;
+  width: 500px;
+  text-decoration: none;
+  color: white;
+  margin-left: 100px;
+  align-items: center;
+}
+
+.logo {
+  width: 60px;
+  height: 60px;
+  margin-right: 10px;
+}
+
+.sidebar-container {
+  top: 90px;
+  left: 0;
+  min-height: calc(100vh - 90px);
+  width: 260px;
+  position: fixed;
+  background: linear-gradient(#3b3b3b, #696969);
+  display: flex;
+  flex-direction: column;
+  z-index: 98;
+  transition: 0.5s ease;
+  transform: translateX(-260px);
+}
+
+.sidebar-container .head {
+  color: white;
+  font-size: 30px;
+  font-weight: bold;
+  padding: 30px;
+  text-transform: uppercase;
+  text-align: center;
+  letter-spacing: 3px;
+}
+
+
+ol {
+  width: 100%;
+  list-style: none;
+}
+
+ol li {
+  display: block;
+  width: 100%;
+}
+
+ol li a {
+  color: aliceblue;
+  font-weight: bold;
+  padding: 15px 10px;
+  text-decoration: none;
+  display: block;
+  font-size: 20px;
+  letter-spacing: 1px;
+  position: relative;
+  transition: 0.3s;
+  overflow: hidden;
+}
+
+ol li a i {
+  width: 70px;
+  font-size: 25px;
+  text-align: center;
+  padding-left: 30px;
+}
+
+ol li:hover a {
+  background: aqua;
+  color: black;
+  letter-spacing: 3px;
+}
+
+input {
+  visibility: hidden;
+  display: none;
+}
+.nav-btn i {
+  position: absolute;
+  right: -50px;
+  top: 30px;
+  font-size: 25px;
+  border-radius: 3px;
+  color: white;
+  padding: 3px 8px;
+  cursor: pointer;
+  background: white;
+}
+
+#bars {
+  background: black;
+}
+
+#times {
+  background: #d2042d;
+}
+
+#check:checked ~ .sidebar-container {
+  transform: translateX(0);
+}
+
+#check:checked ~ .body-content {
+  width: calc(100% - 450px);
+  transition: 500ms;
+  margin-left: 350px;
+  margin-right: 100px;
+}
+
+#check:checked ~ .sidebar-container #bars {
+  display: none;
+}
+
+.body-content {
+  margin-left: 100px;
+  margin-top: 120px;
+  margin-right: 100px;
+  width: calc(100% - 200px);
+  transition: 500ms;
+  justify-content: center;
+  line-height: 1.8em;
+}
