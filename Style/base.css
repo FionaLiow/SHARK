@@ -17,15 +17,27 @@ header {
   padding: 15px 30px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
 }
 
 .logo-container a {
   display: flex;
-  width: 500px;
+  width: wrap;
   text-decoration: none;
   color: white;
   margin-left: 100px;
   align-items: center;
+}
+
+.sec-level {
+  margin-right: 100px;
+  color: white;
+  font-size: 23px;
+  font-weight: bold;
+}
+
+.sec-level #dropdown{
+  font-size: 23px;
 }
 
 .logo {

@@ -18,6 +18,18 @@
                 <h1>S.H.A.R.K</h1>
             </a>
         </div>
+        <div class="sec-level">
+            <form>
+                <label for="dropdown">Security Level:</label>
+                <select id="dropdown" name="dropdown">
+                    <option value="impossible">Impossible</option>
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+                <input type="submit" value="Submit">
+            </form>
+        </div>
     </header>
 
     <input type="checkbox" name="" id="check">
@@ -30,6 +42,7 @@
         </div>
         <div class="head">Menu</div>
         <ol>
+            <li><a href="#"><i class="fa-solid fa-user"></i>Profile</a></li>
             <li><a href="hands-on.php"><i class="fa-solid fa-flask"></i>Hands-on</a></li>
             <li><a href="#"><i class="fa-solid fa-wand-sparkles"></i>Tutorials</a></li>
             <li><a href="#"><i class="fa-solid fa-screwdriver-wrench"></i>Tools</a></li>
