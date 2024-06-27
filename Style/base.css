@@ -36,8 +36,18 @@ header {
   font-weight: bold;
 }
 
-.sec-level #dropdown{
+#security{
   font-size: 23px;
+}
+
+#security option.hidden {
+  display: none;
+  visibility: hidden;
+  height: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: transparent;
 }
 
 .logo {
