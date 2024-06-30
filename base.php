@@ -59,7 +59,6 @@ session_start();
                     <option value="High">High</option>
                     <option value="Impossible">Impossible</option>
                 </select>
-                <input type="submit" name="security-form" value="Submit">
             </form>
             <?php
             if (str_contains($_SERVER['REQUEST_URI'], "High") || str_contains($_SERVER['REQUEST_URI'], "Medium") || str_contains($_SERVER['REQUEST_URI'], "Low") || str_contains($_SERVER['REQUEST_URI'], "Impossible")) {
@@ -93,6 +92,7 @@ session_start();
                 <li><a href="#"><i class="fa-solid fa-wand-sparkles"></i>Tutorials</a></li>
                 <li><a href="#"><i class="fa-solid fa-screwdriver-wrench"></i>Tools</a></li>
                 <li><a href="../home.php"><i class="fa-solid fa-circle-info"></i>About</a></li>
+                <script src="../JS/sidebar.js"></script>
             <?php
             } else {
             ?>

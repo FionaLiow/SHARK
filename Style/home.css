@@ -7,7 +7,6 @@ body {
   font-family: Verdana;
 }
 
-
 .body-content h1 {
   line-height: 40px;
 }
@@ -47,3 +46,84 @@ body {
     0 0 48px aqua;
   letter-spacing: 3px;
 }
+
+.body-content .form_zone {
+  background-color: #4e4f50;
+  padding: 20px;
+  padding-top: 30px;
+  border-radius: 0px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  width: 800px;
+  margin: 0 auto;
+  margin-top: 30px;
+  height: 180px;
+  /* margin-bottom: 30px; */
+}
+
+.body-content .form_zone p {
+  font-weight: bold;
+  color: white;
+  padding-bottom: 10px;
+}
+
+.body-content .form_zone label {
+  display: block;
+  margin-bottom: 8px;
+  color: #555;
+}
+
+.body-content .form_zone input[type="text"] {
+  width: calc(100% - 20px);
+}
+
+.body-content .form_zone input[type="text"],
+button {
+  padding: 10px;
+  margin: 5px 0 20px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.user_id_select{
+  padding: 10px;
+  margin: 5px 0 20px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 18px;
+}
+
+.body-content .form_zone button {
+  width: 150px;
+  background-color: #21b6a8;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  border: none;
+  cursor: pointer;
+  float: right;
+}
+
+.body-content .form_zone button:hover {
+  background-color: #58f6f2;
+  color: #4e4f50;
+}
+
+.body-content .form_result {
+  background-color: #F0F8FF;
+  padding: 20px;
+  padding-top: 30px;
+  border-radius: 0px;
+  width: 800px;
+  margin: 0 auto;
+  margin-bottom: 80px;
+}
+
+
+.body-content .form_result p span {
+  font-weight: bold;
+}
+

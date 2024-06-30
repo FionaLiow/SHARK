@@ -117,10 +117,6 @@ ol li:hover a {
   letter-spacing: 3px;
 }
 
-input {
-  visibility: hidden;
-  display: none;
-}
 .nav-btn i {
   position: absolute;
   right: -50px;

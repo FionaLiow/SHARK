@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (
       securityLevel !== "" &&
       confirm(
-        "Are you sure you want to change the security level? Your current progress will be lost! "
+        "Are you sure you want to change the security level? You might lose your progress! "
       )
     ) {
       alert("Security level set to " + securityLevel);
