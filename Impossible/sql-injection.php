@@ -5,7 +5,7 @@
         <h1>SQL Injection</h1>
         <h2>&nbsp;&nbsp;-&nbsp;<span style="color: #0000D1;">Impossible</span></h2>
     </div>
-    <?php include '../Description/sql-injection_description.php';
+    <?php include '../Description/description.php';
     include '../sql_users_conn.php' ?>
 
     <div class="form_zone">

@@ -140,7 +140,7 @@
             </li>
         </ul>
         </br>
-        <h3><span style="color: #7B0323;">Security Note:</span></h3>
+        <h3><span style="color: #D10000;">Security Note:</span></h3>
         <p>
             Always sanitize and validate user inputs (<code>$user_id</code> in this case) to prevent SQL injection attacks. Using prepared statements (<code>$stmt->prepare()</code>, <code>$stmt->bind_param()</code>) helps mitigate these risks.
         </p>
