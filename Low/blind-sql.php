@@ -11,15 +11,15 @@
 
     <div class="form_zone">
         <p>Find user with user ID :</p>
-        <form action="" method="get">
+        <form action="" method="post">
             <input type="text" name="user_id" id="user_id" placeholder="Enter the user ID">
             <button type="submit">Submit</button>
         </form>
     </div>
 
     <?php
-    if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['user_id'])) {
-        $id = $_GET['user_id'];
+    if ($_SERVER["REQUEST_METHOD"] == "POST")  {
+        $id = $_POST['user_id'];
         $query  = "SELECT user_id, user_name, email FROM users WHERE user_id = '$id';";
         $result = mysqli_query($conn, $query);
 

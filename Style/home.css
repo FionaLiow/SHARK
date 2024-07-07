@@ -127,3 +127,27 @@ button {
   font-weight: bold;
 }
 
+
+.link-container {
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    text-align: center;
+}
+.link-container a {
+    display: block;
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #f0f0f0;
+    text-decoration: none;
+    color: #333;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.link-container a:hover {
+    background-color: #e0e0e0;
+    border-color: #bbb;
+}
+
+

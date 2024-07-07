@@ -23,9 +23,18 @@ document.addEventListener("DOMContentLoaded", function () {
           var currentURL = window.location.href;
           var urlParts = currentURL.split("/");
           var baseURL = urlParts.slice(0, -2).join("/"); // Base URL excluding the last two parts (directory and file)
-          var newURL = baseURL + "/" + securityLevel + "/" + urlParts[urlParts.length - 1]; // Construct new URL
-          alert("Redirecting URL: " + newURL);
-          window.location.href = newURL;
+          var newURL =
+            baseURL + "/" + securityLevel + "/" + urlParts[urlParts.length - 1]; // Construct new URL
+          var redirect = newURL.split("?");
+          var redirectURL = redirect[0];
+
+          if (redirectURL) {
+            alert("Redirecting URL: " + redirectURL);
+            window.location.href = redirectURL; 
+          } else {
+            alert("Redirecting URL: " + newURL);
+            window.location.href = newURL;
+          }
         }
       };
       xhr.send("security=" + encodeURIComponent(securityLevel));
