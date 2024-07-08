@@ -86,7 +86,7 @@ button {
   box-sizing: border-box;
 }
 
-.user_id_select{
+.user_id_select {
   padding: 10px;
   margin: 5px 0 20px 0;
   display: inline-block;
@@ -113,7 +113,7 @@ button {
 }
 
 .body-content .form_result {
-  background-color: #F0F8FF;
+  background-color: #f0f8ff;
   padding: 20px;
   padding-top: 30px;
   border-radius: 0px;
@@ -122,32 +122,68 @@ button {
   margin-bottom: 80px;
 }
 
-
 .body-content .form_result p span {
   font-weight: bold;
 }
 
-
 .link-container {
-    margin: 20px;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    text-align: center;
+  margin: 20px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  text-align: center;
 }
 .link-container a {
-    display: block;
-    margin: 10px 0;
-    padding: 10px;
-    background-color: #f0f0f0;
-    text-decoration: none;
-    color: #333;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+  display: block;
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #f0f0f0;
+  text-decoration: none;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 .link-container a:hover {
-    background-color: #e0e0e0;
-    border-color: #bbb;
+  background-color: #e0e0e0;
+  border-color: #bbb;
 }
 
+@keyframes rainbow {
+  0% {
+    color: red;
+  }
 
+  16.7% {
+    color: orange;
+  }
+
+  33.3% {
+    color: yellow;
+  }
+
+  50% {
+    color: green;
+  }
+
+  66.7% {
+    color: blue;
+  }
+
+  83.3% {
+    color: indigo;
+  }
+
+  100% {
+    color: violet;
+  }
+}
+
+.rainbow-text {
+  animation: rainbow 4s infinite;
+}
+
+.emphasize {
+  font-size: 20px;
+  text-transform: uppercase;
+  font-weight: bold;
+}

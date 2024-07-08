@@ -13,7 +13,6 @@
         $file = $_GET['page'];
     ?>
         <div class="link-container">
-            <h1>Profile Picture</h1>
             <?php include $file; ?>
             <br>
             <a href="../Low/file-inclusion.php">Back</a>
@@ -21,12 +20,15 @@
     <?php
     } else {
     ?>
+        </br>
+        <p><span style="font-weight:bold;" class="rainbow-text" ;>HINT!</span> Your final mission is to find the hidden mesage left by those profiles.</p>
         <div class="link-container">
             <h2>View Profile Picture</h2>
             <a href="?page=../Profile/profile1.php">Profile 1</a>
             <a href="?page=../Profile/profile2.php">Profile 2</a>
             <a href="?page=../Profile/profile3.php">Profile 3</a>
         </div>
+
     <?php
     }
     ?>

@@ -21,16 +21,19 @@ document.addEventListener("DOMContentLoaded", function () {
       xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
           var currentURL = window.location.href;
-          var urlParts = currentURL.split("/");
+          var remove = currentURL.split("?");
+          var removeURL = remove[0];
+          var urlParts = removeURL.split("/");
           var baseURL = urlParts.slice(0, -2).join("/"); // Base URL excluding the last two parts (directory and file)
           var newURL =
             baseURL + "/" + securityLevel + "/" + urlParts[urlParts.length - 1]; // Construct new URL
+
           var redirect = newURL.split("?");
           var redirectURL = redirect[0];
 
           if (redirectURL) {
             alert("Redirecting URL: " + redirectURL);
-            window.location.href = redirectURL; 
+            window.location.href = redirectURL;
           } else {
             alert("Redirecting URL: " + newURL);
             window.location.href = newURL;
