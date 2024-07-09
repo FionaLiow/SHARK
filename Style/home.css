@@ -63,6 +63,7 @@ body {
 .body-content .form_zone p {
   font-weight: bold;
   color: white;
+  font-size: 20px;
   padding-bottom: 10px;
 }
 
@@ -111,6 +112,14 @@ button {
   background-color: #58f6f2;
   color: #4e4f50;
 }
+
+.body-content .form_zone input[type="file"] {
+  margin-top: 10px;
+  padding: 10px;
+  font-size: 18px;
+  color: aliceblue;
+}
+
 
 .body-content .form_result {
   background-color: #f0f8ff;
