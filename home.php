@@ -30,7 +30,7 @@ if (isset($_SESSION['username'])) {
     <h2>It is recommended to:</h2><br />
     <p>1. Use a virtual machine (like VirtualBox or VMware) with NAT networking. </br>2. Inside the virtual machine, install XAMPP (web server and database) to run SHARK.</p>
     <br />
-    <h2><i class="fa-solid fa-skull-crossbones"></i>&nbsp Disclaimer</h2><br />
+    <h2><i class="fa-solid fa-skull-crossbones fa-beat-fade" style="color: #371448;"></i></i>&nbsp Disclaimer</h2><br />
     <p>We are not responsible for how users choose to utilize SHARK. It's designed for ethical learning and should not be misused. We've clearly outlined its purpose and implemented safeguards to prevent deployment on live servers. Any compromise of a web server due to SHARK installation is solely the responsibility of the individual who uploaded and installed it.</p>
     <hr />
     <br />

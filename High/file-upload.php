@@ -33,7 +33,7 @@
 
 
         if ((strtolower($uploaded_ext) == "jpg" || strtolower($uploaded_ext) == "jpeg" || strtolower($uploaded_ext) == "png") &&
-            ($uploaded_size < 10000000000)
+            ($uploaded_size < 10000000000)&&getimagesize( $uploaded_tmp )
         ) {
 
             if (!move_uploaded_file($uploaded_tmp, $target_path)) {

@@ -67,6 +67,14 @@ body {
   padding-bottom: 10px;
 }
 
+.body-content .form_zone ul li {
+  margin-left: 20px;
+}
+
+.body-content .form_zone ul a {
+  color: aliceblue;
+}
+
 .body-content .form_zone label {
   display: block;
   margin-bottom: 8px;

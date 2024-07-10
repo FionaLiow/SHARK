@@ -4,6 +4,7 @@ session_start();
 
 <!DOCTYPE html>
 <html lang="en">
+<link rel="icon" type="image/x-icon" href="Image/shark.ico">
 
 <head>
     <meta charset="UTF-8">
@@ -21,7 +22,7 @@ session_start();
     <?php
     }
     ?>
-    <title>Home</title>
+    <title>SHARK</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"> -->
 </head>
