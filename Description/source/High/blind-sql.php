@@ -65,84 +65,56 @@
     </div>
     <div class="explanation">
 
-        <h3>Form Handling:</h3>
+        <h3>HTML Form Setup:</h3>
         <ul>
-            <li>
-                The form uses the POST method, so when the form is submitted, the PHP script checks if the request method is POST.
-            </li>
+            <li><code>&lt;div class="form_zone"&gt;</code>: Creates a styled container for the form.</li>
+            <li><code>&lt;p&gt;Find user with user ID :&lt;/p&gt;</code>: A paragraph explaining the form's purpose.</li>
+            <li><code>&lt;form action="" method="get"&gt;</code>: Defines a form that submits data via the GET method to the same page.</li>
+            <li><code>&lt;select name="user_id_opt" class="user_id_select"&gt;</code>: Provides a dropdown menu with user ID options.</li>
+            <li><code>&lt;option value="1"&gt;1&lt;/option&gt;</code> through <code>&lt;option value="5"&gt;5&lt;/option&gt;</code>: Dropdown options for user IDs 1 through 5.</li>
+            <li><code>&lt;button type="submit"&gt;Submit&lt;/button&gt;</code>: Submit button to send the form data.</li>
         </ul>
 
-        <h3>Sanitization:</h3>
+        <h3>Processing the Form Submission:</h3>
         <ul>
-            <li>
-                The selected user ID is retrieved from the form submission (<code>$id = $_POST['user_id_opt'];</code>).
-            </li>
-            <li>
-                To prevent SQL injection attacks, certain substrings ("--" and "or") are removed from the submitted user ID using <code>str_replace</code>.
-            </li>
+            <li><code>if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['user_id_opt'])) { ... }</code>: Checks if the form was submitted via GET and the user_id_opt parameter is set.</li>
+            <li><code>$id = $_GET['user_id_opt'];</code>: Retrieves the selected user ID from the GET request.</li>
+            <li><code>$substring_to_remove = array("-", "#", "%");</code>: Defines substrings to remove for sanitization.</li>
+            <li><code>$submitted_id = str_replace($substring_to_remove, "", $id);</code>: Removes the defined substrings from the user ID.</li>
+            <li><code>$query = "SELECT user_id, user_name, email FROM users WHERE user_id = '$submitted_id' LIMIT 1;";</code>: Prepares an SQL query to fetch user details for the sanitized user ID.</li>
+            <li><code>$result = mysqli_query($conn, $query);</code>: Executes the query against the database.</li>
         </ul>
 
-        <h3>SQL Query:</h3>
+        <h3>Handling the Query Result:</h3>
         <ul>
-            <li>
-                An SQL query is constructed to select the <code>user_id</code>, <code>user_name</code>, and <code>email</code> from the <code>users</code> table where the <code>user_id</code> matches the sanitized user ID. The <code>LIMIT 1</code> clause ensures that only one result is returned.
-            </li>
+            <li><code>if ($result) { ... }</code>: Checks if the query executed successfully.</li>
+            <li><code>$exists = mysqli_num_rows($result) > 0;</code>: Determines if any rows were returned.</li>
+            <li><strong>If the user ID exists:</strong></li>
+            <ul>
+                <li><code>$html = '&lt;p&gt;User ID &lt;span style="color: #00008B;"&gt;EXISTS&lt;/span&gt; in the database.&lt;/p&gt;';</code>: Sets a message indicating the user ID exists.</li>
+            </ul>
+            <li><strong>If the user ID does not exist:</strong></li>
+            <ul>
+                <li><code>http_response_code(404);</code>: Sets the HTTP response code to 404.</li>
+                <li><code>$html = '&lt;p&gt;User ID is &lt;span style="color: red;"&gt;MISSING&lt;/span&gt; from the database.&lt;/p&gt;';</code>: Sets a message indicating the user ID is missing.</li>
+            </ul>
+            <li><code>mysqli_free_result($result);</code>: Frees the result set to release resources.</li>
+            <li><strong>If the query failed:</strong></li>
+            <ul>
+                <li><code>$html = "Error: " . mysqli_error($conn);</code>: Sets an error message with the MySQL error.</li>
+            </ul>
+            <li><code>mysqli_close($conn);</code>: Closes the database connection.</li>
         </ul>
-
-        <h3>Executing the Query:</h3>
+</br>
+        <h3><span style="color: #D10000;">Security Considerations:</span></h3>
         <ul>
-            <li>
-                The query is executed using <code>mysqli_query</code>.
-            </li>
-            <li>
-                If the query is successful and there are results (<code>mysqli_num_rows($result) > 0</code>), a loop iterates through the results and retrieves the user information.
-            </li>
+            <li><strong>Input Sanitization:</strong> Removes potentially dangerous characters from user input to prevent SQL injection.</li>
+            <li><strong>Using Prepared Statements:</strong> Recommended to use prepared statements to prevent SQL injection fully.</li>
+            <li><strong>Error Handling:</strong> Displays user-friendly error messages and sets appropriate HTTP response codes.</li>
         </ul>
-
-        <h3>Display Results:</h3>
-        <ul>
-            <li>
-                The retrieved user information is formatted as HTML and appended to the <code>$html</code> variable.
-            </li>
-            <li>
-                If no user is found, the <code>$html</code> variable is set to display a "No user found" message.
-            </li>
-        </ul>
-
-        <h3>Resource Management:</h3>
-        <ul>
-            <li>
-                The memory associated with the result set is freed using <code>mysqli_free_result($result)</code>.
-            </li>
-            <li>
-                The database connection is closed using <code>mysqli_close($conn)</code>.
-            </li>
-        </ul>
-
-        <h3><span style="color: #D10000;">Security Note:</span></h3>
-        <p>
-            Always sanitize and validate user inputs, such as <code>$user_id_opt</code> in this case, to prevent SQL injection attacks. Simply removing characters like "--" and "or" is not sufficient; consider the following:
-        </p>
-        <ul>
-            <li>
-                <strong>Use Prepared Statements:</strong> Prefer prepared statements and parameterized queries to separate SQL logic from data and prevent malicious input from altering query structure.
-            </li>
-            <li>
-                <strong>Input Validation:</strong> Validate user inputs to ensure they conform to expected formats and ranges before using them in SQL queries. This prevents both SQL injection and other input-related vulnerabilities.
-            </li>
-            <li>
-                <strong>Escape Special Characters:</strong> If constructing SQL queries manually, use appropriate escaping functions (e.g., <code>mysqli_real_escape_string</code>) specific to your database to prevent special characters from being interpreted as part of the query.
-            </li>
-            <li>
-                <strong>Limit Privileges:</strong> Restrict database user privileges to minimize potential impact of a successful attack. Grant only necessary permissions for each user role.
-            </li>
-        </ul>
-        <p>
-            Implementing these practices ensures robust protection against SQL injection and enhances overall application security.
-        </p>
-
 
     </div>
+
 
 
 </body>

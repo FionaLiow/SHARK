@@ -50,17 +50,23 @@
     </div>
     <div class="explanation">
 
-        <h3>Checking Request Method:</h3>
+        <h3>Checking for Form Submission:</h3>
         <ul>
             <li>
-                <code>if ($_SERVER["REQUEST_METHOD"] == "POST") { ... }</code>: This condition checks if the current request method is POST. This ensures that the code inside the block executes only when the form with <code>method="post"</code> is submitted.
+                <code>if (isset($_GET['brute-force-submit'])) { ... }</code>: This condition checks if the form with <code>name="brute-force-submit"</code> is submitted. This ensures that the code inside the block executes only when the form is submitted.
             </li>
         </ul>
 
-        <h3>Sanitizing User Input:</h3>
+        <h3>Retrieving and Hashing User Input:</h3>
         <ul>
             <li>
-                <code>$id = $_POST['user_id'];</code>: This line retrieves the <code>user_id</code> from the POST data. Note that it's directly used in the SQL query, which is not safe. It should be sanitized to prevent SQL injection.
+                <code>$user = $_GET['username'];</code>: This line retrieves the <code>username</code> from the GET data.
+            </li>
+            <li>
+                <code>$pass = $_GET['password'];</code>: This line retrieves the <code>password</code> from the GET data.
+            </li>
+            <li>
+                <code>$pass = md5($pass);</code>: This line hashes the password using MD5. Note that MD5 is not considered secure for hashing passwords.
             </li>
         </ul>
 
@@ -68,44 +74,30 @@
         <ul>
             <li>The script assumes a database connection (<code>$conn</code>) has been previously established.</li>
             <li>
-                <code>$query = "SELECT user_id, user_name, email FROM users WHERE user_id = '$id';"</code>: Defines the SQL query to select user information based on the <code>user_id</code>.
+                <code>$query = "SELECT * FROM users WHERE user_name = '$user' AND password = '$pass';"</code>: Defines the SQL query to select user information based on the <code>username</code> and hashed <code>password</code>.
             </li>
             <li>
                 <code>$result = mysqli_query($conn, $query);</code>: Executes the SQL query. Using direct input like this can lead to SQL injection and should be avoided. Prepared statements should be used instead.
             </li>
         </ul>
 
-        <h3>Binding Parameters and Executing the Query:</h3>
-        <ul>
-            <li>
-                Since this example does not use prepared statements, it directly executes the query:<br>
-                <code>$result = mysqli_query($conn, $query);</code>
-            </li>
-        </ul>
-
-        <h3>Binding Results and Storing Them:</h3>
-        <ul>
-            <li>
-                <code>if ($result && mysqli_num_rows($result) > 0) { ... }</code>: Checks if the query returned any rows.
-            </li>
-        </ul>
-
         <h3>Processing the Query Results:</h3>
         <ul>
             <li>
-                <code>while ($row = mysqli_fetch_assoc($result)) { ... }</code>: Iterates through the result set, it retrieves and stores user information in variables.<br>
-                <code>$user_id = $row["user_id"];</code><br>
-                <code>$user_name = $row["user_name"];</code><br>
-                <code>$email = $row["email"];</code><br>
-                <code>$html .= "&lt;p&gt;&lt;span&gt;ID: &lt;/span&gt;{$user_id}&lt;/p&gt;&lt;p&gt;&lt;span&gt;Username: &lt;/span&gt; {$user_name}&lt;/p&gt;&lt;p&gt;&lt;span&gt;Email: &lt;/span&gt; {$email}&lt;/p&gt;";</code>: Inside the loop, it constructs HTML to display user information (ID, Username, Email).
+                <code>if ($result && mysqli_num_rows($result) == 1) { ... }</code>: Checks if the query executed successfully and returned exactly one row.
+            </li>
+            <li>
+                If the login is successful, <code>$row = mysqli_fetch_assoc($result);</code> fetches the user data, including the <code>profile_pic</code>.
+            </li>
+            <li>
+                Constructs <code>$html = "&lt;p&gt;Welcome to cartoon world, {$user} !&lt;/p&gt;";</code> to display a welcome message.
             </li>
         </ul>
 
-        <h3>Handling No Results:</h3>
+        <h3>Handling Failed Login:</h3>
         <ul>
             <li>
-                If no user is found:<br>
-                <code>} else {<br>$html = "No user found";<br>}</code>: It outputs a message indicating no user was found with the provided <code>user_id</code>.
+                If the login fails, it sets <code>$html = "&lt;pre&gt;&lt;br /&gt;Username and/or password incorrect.&lt;/pre&gt;";</code> to display an error message.
             </li>
         </ul>
 
@@ -121,10 +113,12 @@
         <br>
         <h3><span style="color: #D10000;">Security Note:</span></h3>
         <p>
-            Always sanitize and validate user inputs (<code>$user_id</code> in this case) to prevent SQL injection attacks. Using prepared statements (<code>$stmt->prepare()</code>, <code>$stmt->bind_param()</code>) helps mitigate these risks.</br>
+            Always sanitize and validate user inputs (<code>$user</code> and <code>$pass</code> in this case) to prevent SQL injection attacks. Using prepared statements (<code>$stmt->prepare()</code>, <code>$stmt->bind_param()</code>) helps mitigate these risks.<br>
+            Avoid using MD5 for password hashing. Use stronger hashing algorithms like bcrypt or Argon2.
         </p>
 
     </div>
+
 
 
 </body>

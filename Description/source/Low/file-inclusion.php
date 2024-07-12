@@ -41,90 +41,54 @@
 ?&gt;</code></pre>
     </div>
 
-
-
-
-
-
     <div class="heading">
         <h3>&nbsp;&nbsp;&nbsp;Explanations</h3>
     </div>
+
     <div class="explanation">
 
-        <h3>Checking Request Method:</h3>
+        <h3>Checking for Query Parameter:</h3>
         <ul>
             <li>
-                <code>if ($_SERVER["REQUEST_METHOD"] == "POST") { ... }</code>: This condition checks if the current request method is POST. This ensures that the code inside the block executes only when the form with <code>method="post"</code> is submitted.
+                <code>if (isset($_GET['page'])) { ... }</code>: This condition checks if the <code>page</code> query parameter is set in the URL. This determines whether to include a specific file based on user input.
             </li>
         </ul>
 
-        <h3>Sanitizing User Input:</h3>
+        <h3>Handling File Inclusion:</h3>
         <ul>
             <li>
-                <code>$id = $_POST['user_id'];</code>: This line retrieves the <code>user_id</code> from the POST data. Note that it's directly used in the SQL query, which is not safe. It should be sanitized to prevent SQL injection.
+                <code>$file = $_GET['page'];</code>: This line retrieves the value of the <code>page</code> parameter from the GET request.
+            </li>
+            <li>
+                <code>include $file;</code>: Includes the file specified by the user, which could lead to a vulnerability known as Local File Inclusion (LFI) if not properly sanitized.
             </li>
         </ul>
 
-        <h3>Database Connection and SQL Preparation:</h3>
+        <h3>Conditional Output:</h3>
         <ul>
-            <li>The script assumes a database connection (<code>$conn</code>) has been previously established.</li>
             <li>
-                <code>$query = "SELECT user_id, user_name, email FROM users WHERE user_id = '$id';"</code>: Defines the SQL query to select user information based on the <code>user_id</code>.
+                If the <code>page</code> parameter is set:
+                <ul>
+                    <li>The included file (<code>$file</code>) is displayed within a <code>&lt;div class="link-container"&gt;</code>.</li>
+                    <li>A back link <code>&lt;a href="../Low/file-inclusion.php"&gt;Back&lt;/a&gt;</code> is provided to return to the original page.</li>
+                </ul>
             </li>
             <li>
-                <code>$result = mysqli_query($conn, $query);</code>: Executes the SQL query. Using direct input like this can lead to SQL injection and should be avoided. Prepared statements should be used instead.
+                If the <code>page</code> parameter is not set:
+                <ul>
+                    <li>A hint message is displayed: <code>&lt;p&gt;&lt;span style="font-weight:bold;"&gt;HINT!&lt;/span&gt; Your final mission is to find the hidden message left by those profiles.&lt;/p&gt;</code></li>
+                    <li>Links are provided to view profiles (<code>profile1.php</code>, <code>profile2.php</code>, <code>profile3.php</code>) with the <code>page</code> parameter set accordingly (<code>?page=...</code>).</li>
+                </ul>
             </li>
         </ul>
 
-        <h3>Binding Parameters and Executing the Query:</h3>
-        <ul>
-            <li>
-                Since this example does not use prepared statements, it directly executes the query:<br>
-                <code>$result = mysqli_query($conn, $query);</code>
-            </li>
-        </ul>
-
-        <h3>Binding Results and Storing Them:</h3>
-        <ul>
-            <li>
-                <code>if ($result && mysqli_num_rows($result) > 0) { ... }</code>: Checks if the query returned any rows.
-            </li>
-        </ul>
-
-        <h3>Processing the Query Results:</h3>
-        <ul>
-            <li>
-                <code>while ($row = mysqli_fetch_assoc($result)) { ... }</code>: Iterates through the result set, it retrieves and stores user information in variables.<br>
-                <code>$user_id = $row["user_id"];</code><br>
-                <code>$user_name = $row["user_name"];</code><br>
-                <code>$email = $row["email"];</code><br>
-                <code>$html .= "&lt;p&gt;&lt;span&gt;ID: &lt;/span&gt;{$user_id}&lt;/p&gt;&lt;p&gt;&lt;span&gt;Username: &lt;/span&gt; {$user_name}&lt;/p&gt;&lt;p&gt;&lt;span&gt;Email: &lt;/span&gt; {$email}&lt;/p&gt;";</code>: Inside the loop, it constructs HTML to display user information (ID, Username, Email).
-            </li>
-        </ul>
-
-        <h3>Handling No Results:</h3>
-        <ul>
-            <li>
-                If no user is found:<br>
-                <code>} else {<br>$html = "No user found";<br>}</code>: It outputs a message indicating no user was found with the provided <code>user_id</code>.
-            </li>
-        </ul>
-
-        <h3>Closing Resources:</h3>
-        <ul>
-            <li>
-                <code>mysqli_free_result($result);</code>: Frees the result set to release resources.
-            </li>
-            <li>
-                <code>mysqli_close($conn);</code>: Closes the database connection once the operations are complete.
-            </li>
-        </ul>
-        <br>
-        <h3><span style="color: #D10000;">Security Note:</span></h3>
+        <h3>Security Note:</h3>
         <p>
-            Always sanitize and validate user inputs (<code>$user_id</code> in this case) to prevent SQL injection attacks. Using prepared statements (<code>$stmt->prepare()</code>, <code>$stmt->bind_param()</code>) helps mitigate these risks.</br>
+            Using user-supplied input (<code>$_GET['page']</code> in this case) directly in file inclusion operations can lead to Local File Inclusion (LFI) vulnerabilities.
+            Validate and sanitize user input rigorously before including files. Ensure that only expected and safe files can be included, and consider using a whitelist approach where possible.
+            Avoid exposing sensitive system files or files that shouldn't be directly accessible through such mechanisms.
         </p>
-
+</br>
     </div>
 
 

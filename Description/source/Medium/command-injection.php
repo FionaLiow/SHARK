@@ -54,84 +54,62 @@ if (isset(<span class="php-variable">$_POST</span>[<span class="php-string">'Sub
     </div>
     <div class="explanation">
 
-        <h3>HTML Form Submission:</h3>
+        <h3>HTML Form for IP Address Submission:</h3>
         <ul>
             <li>
-                This HTML code defines a form that submits data using the POST method to the same URL (action="" means it submits to the current page).
+                <code>&lt;div class="form_zone"&gt;</code>: Creates a styled container for the form.
             </li>
             <li>
-                Inside the form, there's a <code>&lt;select&gt;</code> element (user_id_opt) with three <code>&lt;option&gt;</code> elements, each representing a user ID (1, 2, 3).
+                <code>&lt;p&gt;Ping a device using IP address :&lt;/p&gt;</code>: Provides a prompt for the user.
             </li>
             <li>
-                The <code>&lt;button&gt;</code> element triggers the form submission when clicked.
+                <code>&lt;form action="" method="post"&gt;</code>: Sets up a form to submit data via POST to the same page (action="" means the form submits to itself).
+            </li>
+            <li>
+                <code>&lt;input type="text" name="ip" id="ip" placeholder="Enter IP address"&gt;</code>: Allows users to enter an IP address for pinging.
+            </li>
+            <li>
+                <code>&lt;button type="submit" name="Submit"&gt;Submit&lt;/button&gt;</code>: Is a submit button triggering form submission with the name attribute set to Submit.
             </li>
         </ul>
 
-        <h3>PHP Condition (<code>if ($_SERVER["REQUEST_METHOD"] == "POST")</code>):</h3>
+        <h3>PHP Handling of Form Submission:</h3>
         <ul>
             <li>
-                Checks if the form has been submitted using the POST method.
-            </li>
-        </ul>
-
-        <h3>Retrieve <code>user_id_opt</code> from <code>$_POST</code>:</h3>
-        <ul>
-            <li>
-                Retrieves the selected <code>user_id_opt</code> from the form submission.
-            </li>
-        </ul>
-
-        <h3>SQL Query (<code>$query</code>):</h3>
-        <ul>
-            <li>
-                Constructs an SQL query to select <code>user_id</code>, <code>user_name</code>, and <code>email</code> from the <code>users</code> table where <code>user_id</code> matches the selected value.
+                <code>if (isset($_POST['Submit'])) { ... }</code>: Checks if the form has been submitted using the POST method and if the Submit button has been clicked.
             </li>
             <li>
-                Executes the SQL query using <code>mysqli_query()</code> with the connection <code>$conn</code>. Direct input like this can lead to SQL injection and should be avoided; prepared statements should be used instead.
+                <code>$target = $_REQUEST['ip'];</code>: Retrieves the IP address from the POST data using $_REQUEST, which includes both GET and POST variables. It's sanitized later in the code.
             </li>
-        </ul>
-
-        <h3>Fetch Results (<code>mysqli_fetch_assoc()</code>):</h3>
-        <ul>
             <li>
-                If the query returns results (<code>$result</code>), iterates through each row using <code>mysqli_fetch_assoc()</code> to fetch an associative array (<code>$row</code>) containing user data.
+                <code>$substitutions = array(...);</code>: Defines an array of substitutions to prevent command injection. It removes characters like && and ;.
             </li>
-        </ul>
-
-        <h3>Format HTML Output:</h3>
-        <ul>
             <li>
-                Formats the fetched data into HTML format using string concatenation (<code>$html .= ...</code>).
+                <code>$target = str_replace(array_keys($substitutions), $substitutions, $target);</code>: Sanitizes the $target variable by replacing characters specified in $substitutions with empty strings to prevent command injection.
             </li>
-        </ul>
-
-        <h3>Handle No Results:</h3>
-        <ul>
             <li>
-                If no user is found (<code>$result</code> is empty), sets <code>$html</code> to "No user found".
+                If server OS is Windows:
+                <ul>
+                    <li><code>$cmd = shell_exec('ping ' . $target);</code>: Executes the ping command on Windows to ping the specified IP address.</li>
+                </ul>
             </li>
-        </ul>
-
-        <h3>Free Result Set (<code>mysqli_free_result()</code>):</h3>
-        <ul>
             <li>
-                Frees memory associated with the result set.
-            </li>
-        </ul>
-
-        <h3>Close Database Connection (<code>mysqli_close()</code>):</h3>
-        <ul>
-            <li>
-                Closes the database connection (<code>$conn</code>) to free resources.
+                If server OS is Unix/Linux:
+                <ul>
+                    <li><code>$cmd = shell_exec('ping -c 4 ' . $target);</code>: Executes the ping command with 4 packets on Unix/Linux to ping the specified IP address.</li>
+                </ul>
             </li>
         </ul>
 
         <h3><span style="color: #D10000;">Security Note:</span></h3>
         <p>
-            Always sanitize and validate user inputs (<code>$user_id_opt</code> in this case) to prevent SQL injection attacks. Using prepared statements (<code>$stmt-&gt;prepare()</code>, <code>$stmt-&gt;bind_param()</code>) helps mitigate these risks effectively.
+            Sanitizing user input ($target) by removing potentially harmful characters (&&, ;) helps prevent command injection attacks.
+            Executing shell commands (shell_exec()) based on user input ($target) can be risky. Ensure that proper sanitization and validation are implemented to mitigate risks.
+            Always validate and sanitize input from users before using it in commands or queries to prevent security vulnerabilities.
         </p>
-
+</br>
     </div>
+
 
 
 </body>

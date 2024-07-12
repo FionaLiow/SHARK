@@ -43,5 +43,5 @@ if (array_key_exists("redirect", $_GET) && $_GET['redirect'] != "") {
             <li><a href='?redirect=../Profile/food_review/fr2.php'>Food Review 2</a></li>
         </ul>
     </div>
-
+</br>
 </div>

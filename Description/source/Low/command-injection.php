@@ -41,81 +41,44 @@
     </div>
     <div class="explanation">
 
-        <h3>Checking Request Method:</h3>
+        <h3>Checking for Form Submission:</h3>
         <ul>
             <li>
-                <code>if ($_SERVER["REQUEST_METHOD"] == "POST") { ... }</code>: This condition checks if the current request method is POST. This ensures that the code inside the block executes only when the form with <code>method="post"</code> is submitted.
+                <code>if (isset($_POST['submit'])) { ... }</code>: This condition checks if the form with <code>name="submit"</code> is submitted. This ensures that the code inside the block executes only when the form is submitted.
             </li>
         </ul>
 
-        <h3>Sanitizing User Input:</h3>
+        <h3>Retrieving User Input:</h3>
         <ul>
             <li>
-                <code>$id = $_POST['user_id'];</code>: This line retrieves the <code>user_id</code> from the POST data. Note that it's directly used in the SQL query, which is not safe. It should be sanitized to prevent SQL injection.
+                <code>$target = $_POST['ip'];</code>: This line retrieves the IP address from the POST data.
             </li>
         </ul>
 
-        <h3>Database Connection and SQL Preparation:</h3>
+        <h3>Determining Operating System and Executing Command:</h3>
         <ul>
-            <li>The script assumes a database connection (<code>$conn</code>) has been previously established.</li>
             <li>
-                <code>$query = "SELECT user_id, user_name, email FROM users WHERE user_id = '$id';"</code>: Defines the SQL query to select user information based on the <code>user_id</code>.
+                <code>if (stristr(php_uname('s'), 'Windows NT')) { ... }</code>: This condition checks if the server's operating system is Windows NT.
             </li>
             <li>
-                <code>$result = mysqli_query($conn, $query);</code>: Executes the SQL query. Using direct input like this can lead to SQL injection and should be avoided. Prepared statements should be used instead.
+                If true, it constructs the command <code>shell_exec('ping ' . $target);</code> to execute the ping command on Windows.
+            </li>
+            <li>
+                <code>else { ... }</code>: Executes if the operating system is not Windows NT (i.e., it's Unix-based).
+            </li>
+            <li>
+                It constructs the command <code>shell_exec('ping -c 4 ' . $target);</code> to execute the ping command on Unix with <code>-c 4</code> to limit the number of pings to 4.
             </li>
         </ul>
 
-        <h3>Binding Parameters and Executing the Query:</h3>
-        <ul>
-            <li>
-                Since this example does not use prepared statements, it directly executes the query:<br>
-                <code>$result = mysqli_query($conn, $query);</code>
-            </li>
-        </ul>
-
-        <h3>Binding Results and Storing Them:</h3>
-        <ul>
-            <li>
-                <code>if ($result && mysqli_num_rows($result) > 0) { ... }</code>: Checks if the query returned any rows.
-            </li>
-        </ul>
-
-        <h3>Processing the Query Results:</h3>
-        <ul>
-            <li>
-                <code>while ($row = mysqli_fetch_assoc($result)) { ... }</code>: Iterates through the result set, it retrieves and stores user information in variables.<br>
-                <code>$user_id = $row["user_id"];</code><br>
-                <code>$user_name = $row["user_name"];</code><br>
-                <code>$email = $row["email"];</code><br>
-                <code>$html .= "&lt;p&gt;&lt;span&gt;ID: &lt;/span&gt;{$user_id}&lt;/p&gt;&lt;p&gt;&lt;span&gt;Username: &lt;/span&gt; {$user_name}&lt;/p&gt;&lt;p&gt;&lt;span&gt;Email: &lt;/span&gt; {$email}&lt;/p&gt;";</code>: Inside the loop, it constructs HTML to display user information (ID, Username, Email).
-            </li>
-        </ul>
-
-        <h3>Handling No Results:</h3>
-        <ul>
-            <li>
-                If no user is found:<br>
-                <code>} else {<br>$html = "No user found";<br>}</code>: It outputs a message indicating no user was found with the provided <code>user_id</code>.
-            </li>
-        </ul>
-
-        <h3>Closing Resources:</h3>
-        <ul>
-            <li>
-                <code>mysqli_free_result($result);</code>: Frees the result set to release resources.
-            </li>
-            <li>
-                <code>mysqli_close($conn);</code>: Closes the database connection once the operations are complete.
-            </li>
-        </ul>
         <br>
         <h3><span style="color: #D10000;">Security Note:</span></h3>
         <p>
-            Always sanitize and validate user inputs (<code>$user_id</code> in this case) to prevent SQL injection attacks. Using prepared statements (<code>$stmt->prepare()</code>, <code>$stmt->bind_param()</code>) helps mitigate these risks.</br>
+            Directly using user input in system commands (<code>$target</code> in this case) can lead to command injection vulnerabilities. Always sanitize and validate user inputs to prevent this. Use <code>escapeshellcmd()</code> or a similar function to sanitize inputs before using them in shell commands.
         </p>
-
+</br>
     </div>
+
 
 
 </body>

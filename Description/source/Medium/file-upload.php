@@ -58,84 +58,50 @@ if (isset(<span class="php-variable">$_POST</span>[<span class="php-string">'upl
     </div>
     <div class="explanation">
 
-        <h3>HTML Form Submission:</h3>
+        <h3>HTML Form for Image Upload:</h3>
         <ul>
-            <li>
-                This HTML code defines a form that submits data using the POST method to the same URL (action="" means it submits to the current page).
-            </li>
-            <li>
-                Inside the form, there's a <code>&lt;select&gt;</code> element (user_id_opt) with three <code>&lt;option&gt;</code> elements, each representing a user ID (1, 2, 3).
-            </li>
-            <li>
-                The <code>&lt;button&gt;</code> element triggers the form submission when clicked.
-            </li>
+            <li><code>&lt;div class="form_zone"&gt;</code>: Creates a styled container for the form.</li>
+            <li><code>&lt;p&gt;Upload your image:&lt;/p&gt;</code>: Provides a prompt for the user.</li>
+            <li><code>&lt;form action="" method="post" enctype="multipart/form-data"&gt;</code>: Sets up a form to submit data via POST to the same page and allows for file uploads.</li>
+            <li><code>&lt;input type="file" name="image" id="image"&gt;</code>: Allows users to select a file for upload.</li>
+            <li><code>&lt;button type="submit" name="upload"&gt;Upload&lt;/button&gt;</code>: A submit button triggering form submission with the name attribute set to upload.</li>
         </ul>
 
-        <h3>PHP Condition (<code>if ($_SERVER["REQUEST_METHOD"] == "POST")</code>):</h3>
+        <h3>PHP Handling of File Upload:</h3>
         <ul>
-            <li>
-                Checks if the form has been submitted using the POST method.
-            </li>
+            <li><code>if (isset($_POST['upload'])) { ... }</code>: Checks if the form has been submitted using the POST method and if the upload button has been clicked.</li>
+            <li><code>$target_dir = "../Uploads/Images/";</code>: Specifies the directory where uploaded images will be stored.</li>
+            <li><code>$target_path = $target_dir . basename($_FILES['image']['name']);</code>: Constructs the full path for the uploaded file using the base name of the uploaded file.</li>
+            <li><code>$uploaded_name = $_FILES['image']['tmp_name'];</code>, <code>$uploaded_type = $_FILES['image']['type'];</code>, <code>$uploaded_size = $_FILES['image']['size'];</code>: Retrieves information about the uploaded file, including its temporary name, type, and size.</li>
         </ul>
 
-        <h3>Retrieve <code>user_id_opt</code> from <code>$_POST</code>:</h3>
+        <h3>Validation and Upload Process:</h3>
         <ul>
-            <li>
-                Retrieves the selected <code>user_id_opt</code> from the form submission.
-            </li>
+            <li><strong>Validation checks:</strong></li>
+            <ul>
+                <li>Checks if the uploaded file type (<code>$uploaded_type</code>) is either "image/jpeg" or "image/png".</li>
+                <li>Checks if the uploaded file size (<code>$uploaded_size</code>) is less than 10000000000 bytes (approximately 10MB).</li>
+            </ul>
+            <li>If both validation conditions are met:</li>
+            <ul>
+                <li><code>move_uploaded_file($uploaded_name, $target_path);</code>: Moves the uploaded file from its temporary location to the specified target path.</li>
+                <li>If successful, sets <code>$html</code> to indicate the successful upload with the path of the uploaded file.</li>
+                <li>If unsuccessful, sets <code>$html</code> to indicate that the image was not uploaded.</li>
+            </ul>
+            <li>If the file does not meet the validation criteria:</li>
+            <ul>
+                <li>Sets <code>$html</code> to indicate that only JPEG or PNG images are accepted and provides an error message.</li>
+            </ul>
         </ul>
 
-        <h3>SQL Query (<code>$query</code>):</h3>
+        <h3><span style="color: #D10000;">Security Considerations:</span></h3>
         <ul>
-            <li>
-                Constructs an SQL query to select <code>user_id</code>, <code>user_name</code>, and <code>email</code> from the <code>users</code> table where <code>user_id</code> matches the selected value.
-            </li>
-            <li>
-                Executes the SQL query using <code>mysqli_query()</code> with the connection <code>$conn</code>. Direct input like this can lead to SQL injection and should be avoided; prepared statements should be used instead.
-            </li>
+            <li><strong>File Type and Size Validation:</strong> Ensures that only JPEG or PNG images within a reasonable size limit are accepted for upload, preventing potential execution of malicious code disguised as image files.</li>
+            <li><strong>File Upload Location:</strong> Specifies a directory (../Uploads/Images/) where uploaded files are stored, ensuring they are kept separate from executable scripts and sensitive data.</li>
         </ul>
-
-        <h3>Fetch Results (<code>mysqli_fetch_assoc()</code>):</h3>
-        <ul>
-            <li>
-                If the query returns results (<code>$result</code>), iterates through each row using <code>mysqli_fetch_assoc()</code> to fetch an associative array (<code>$row</code>) containing user data.
-            </li>
-        </ul>
-
-        <h3>Format HTML Output:</h3>
-        <ul>
-            <li>
-                Formats the fetched data into HTML format using string concatenation (<code>$html .= ...</code>).
-            </li>
-        </ul>
-
-        <h3>Handle No Results:</h3>
-        <ul>
-            <li>
-                If no user is found (<code>$result</code> is empty), sets <code>$html</code> to "No user found".
-            </li>
-        </ul>
-
-        <h3>Free Result Set (<code>mysqli_free_result()</code>):</h3>
-        <ul>
-            <li>
-                Frees memory associated with the result set.
-            </li>
-        </ul>
-
-        <h3>Close Database Connection (<code>mysqli_close()</code>):</h3>
-        <ul>
-            <li>
-                Closes the database connection (<code>$conn</code>) to free resources.
-            </li>
-        </ul>
-
-        <h3><span style="color: #D10000;">Security Note:</span></h3>
-        <p>
-            Always sanitize and validate user inputs (<code>$user_id_opt</code> in this case) to prevent SQL injection attacks. Using prepared statements (<code>$stmt-&gt;prepare()</code>, <code>$stmt-&gt;bind_param()</code>) helps mitigate these risks effectively.
-        </p>
 
     </div>
+
 
 
 </body>

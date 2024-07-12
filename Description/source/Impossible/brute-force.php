@@ -9,7 +9,7 @@
 </head>
 
 <body>
-    <h1>Blind SQL Injection</h1>
+    <h1>Brute Force</h1>
     <h2>&nbsp;&nbsp;-&nbsp;<span style="color: #0000D1;">Impossible</span></h2></br>
     <div class="heading">
         <h3>&nbsp;&nbsp;&nbsp;Code Snippet</h3>
@@ -123,91 +123,37 @@ generateSessionToken();
     </div>
     <div class="explanation">
 
-        <h3>Checking Request Method:</h3>
+        <h3>HTML Form (<code>&lt;div class="form_zone"&gt;...&lt;/form&gt;</code>):</h3>
         <ul>
-            <li>
-                <code>if ($_SERVER["REQUEST_METHOD"] == "POST") { ... }</code>: This condition checks if the current request method is POST. This ensures that the code inside the block executes only when the form with <code>method="post"</code> is submitted.
-            </li>
+            <li>Provides a login form where users can input their username, password, and includes a hidden field for CSRF protection.</li>
         </ul>
 
-        <h3>Sanitizing User Input:</h3>
+        <h3>PHP Logic for Processing Login (<code>if (isset($_POST['brute-force-submit']) && isset($_POST['username']) && isset($_POST['password']))</code>):</h3>
         <ul>
-            <li>
-                <code>$user_id = intval($_POST['user_id']);</code>: This line retrieves the <code>user_id</code> from the POST data and converts it to an integer using <code>intval()</code> to ensure it's safe for database queries.
+            <li><strong>Checks if the login form has been submitted</strong> (<code>$_POST['brute-force-submit']</code>).</li>
+            <li><strong>Retrieves and validates the username</strong> (<code>$user</code>) <strong>and password</strong> (<code>$pass</code>) <strong>from the form.</strong></li>
+            <li><strong>CSRF Protection</strong> (<code>checkToken($_REQUEST['user_token'], $_SESSION['session_token'], 'index.php')</code>): Ensures CSRF protection by comparing the token submitted in the form (<code>$_REQUEST['user_token']</code>) with the token stored in the session (<code>$_SESSION['session_token']</code>).</li>
+            <li><strong>Database Interaction:</strong>
+                <ul>
+                    <li><strong>Fetching Failed Login Attempts:</strong> Queries the database to retrieve the number of failed login attempts (<code>$row['failed_login']</code>) and the last login timestamp (<code>$row['last_login']</code>).</li>
+                    <li><strong>Validating Username and Password:</strong> Executes a prepared SQL statement to verify if the entered username and password match a record in the database.</li>
+                    <li><strong>Handling Failed Login Attempts:</strong> Increments the failed login count (<code>failed_login</code>) in the database for the respective user if the login fails. Delays response (<code>sleep(rand(2, 4))</code>) to mitigate brute-force attacks.</li>
+                    <li><strong>Update Last Login Time:</strong> Updates the <code>last_login</code> timestamp in the database to track the latest login attempt time, regardless of success or failure.</li>
+                </ul>
             </li>
+            <li><strong>Output (<code>$html</code>):</strong> Displays appropriate messages based on the login attempt outcome: successful login message with personalized greeting, error messages for incorrect credentials, or account lockout due to too many failed attempts.</li>
         </ul>
-
-        <h3>Database Connection and SQL Preparation:</h3>
+</br>
+        <h3><span style="color: #D10000;">Security Measures:</span></h3>
         <ul>
-            <li>The script assumes a database connection (<code>$conn</code>) has been previously established.</li>
-            <li>
-                <code>$sql = "SELECT user_id, user_name, email FROM users WHERE user_id = ?";</code>: Defines the SQL query to select user information based on the <code>user_id</code>.
-            </li>
-            <li>
-                <code>$stmt = $conn->prepare($sql);</code>: Prepares the SQL statement for execution.
-            </li>
+            <li><strong>Prepared Statements:</strong> Utilizes prepared statements with parameter binding (<code>$stmt->bind_param</code>) to prevent SQL injection attacks.</li>
+            <li><strong>Password Hashing:</strong> Uses md5() hashing for passwords (note: MD5 is not recommended for secure hashing in production environments; consider using stronger algorithms like bcrypt).</li>
+            <li><strong>CSRF Protection:</strong> Implements CSRF token validation to prevent cross-site request forgery attacks.</li>
+            <li><strong>Brute-Force Protection:</strong> Implements an account lockout mechanism (<code>$total_failed_login</code> and <code>$lockout_time</code>) to prevent brute-force attacks.</li>
         </ul>
-
-        <h3>Binding Parameters and Executing the Query:</h3>
-        <ul>
-            <li>
-                <code>$stmt->bind_param("i", $user_id);</code>: Binds the <code>user_id</code> parameter to the prepared SQL statement (<code>i</code> indicates it's an integer).
-            </li>
-            <li>
-                <code>$stmt->execute();</code>: Executes the prepared statement with the bound parameter.
-            </li>
-        </ul>
-
-        <h3>Binding Results and Storing Them:</h3>
-        <ul>
-            <li>
-                <code>$stmt->bind_result($id, $username, $email);</code>: Binds variables (<code>$id</code>, <code>$username</code>, <code>$email</code>) to the prepared statement to store the result.
-            </li>
-            <li>
-                <code>$stmt->store_result();</code>: Stores the result set from the prepared statement.
-            </li>
-        </ul>
-
-        <h3>Processing the Query Results:</h3>
-        <ul>
-            <li>
-                <code>if ($stmt->num_rows > 0) { ... }</code>: Checks if any rows were returned by the query.
-            </li>
-            <li>
-                <code>while ($stmt->fetch()) { ... }</code>: Iterates through the result set. Assuming only one user is expected (based on <code>user_id</code> uniqueness), it retrieves and prints user information.
-            </li>
-        </ul>
-
-        <h3>Outputting User Information:</h3>
-        <ul>
-            <li>
-                Inside the <code>while</code> loop, it echoes HTML to display user information (ID, Username, Email). <code>htmlspecialchars()</code> is used to prevent XSS (cross-site scripting) attacks by escaping special characters in the output.
-            </li>
-        </ul>
-
-        <h3>Handling No Results:</h3>
-        <ul>
-            <li>
-                If no user is found (<code>$stmt->num_rows <= 0</code>), it outputs a message indicating no user was found with the provided <code>user_id</code>.
-            </li>
-        </ul>
-
-        <h3>Closing Resources:</h3>
-        <ul>
-            <li>
-                <code>$stmt->close();</code>: Closes the prepared statement to free up resources.
-            </li>
-            <li>
-                <code>$conn->close();</code>: Closes the database connection once the operations are complete.
-            </li>
-        </ul>
-        </br>
-        <h3><span style="color: #D10000;">Security Note:</span></h3>
-        <p>
-            Always sanitize and validate user inputs (<code>$user_id</code> in this case) to prevent SQL injection attacks. Using prepared statements (<code>$stmt->prepare()</code>, <code>$stmt->bind_param()</code>) helps mitigate these risks.
-        </p>
 
     </div>
+
 
 
 </body>

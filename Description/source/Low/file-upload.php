@@ -42,91 +42,72 @@ if (<span class="php-function">isset</span>(<span class="php-variable">$_POST</s
     </div>
 
 
-
-
-
-
-
     <div class="heading">
         <h3>&nbsp;&nbsp;&nbsp;Explanations</h3>
     </div>
     <div class="explanation">
 
-        <h3>Checking Request Method:</h3>
+        <h3>HTML Form for Image Upload:</h3>
         <ul>
             <li>
-                <code>if ($_SERVER["REQUEST_METHOD"] == "POST") { ... }</code>: This condition checks if the current request method is POST. This ensures that the code inside the block executes only when the form with <code>method="post"</code> is submitted.
+                <code>&lt;div class="form_zone"&gt;</code>: Creates a styled container for the form.
+            </li>
+            <li>
+                <code>&lt;p&gt;Upload your image:&lt;/p&gt;</code>: Provides a prompt for the user.
+            </li>
+            <li>
+                <code>&lt;form action="" method="post" enctype="multipart/form-data"&gt;</code>: Sets up a form to submit files via POST with multipart/form-data encoding.
+            </li>
+            <li>
+                <code>&lt;input type="file" name="image" id="image"&gt;</code>: Allows users to select a file for upload.
+            </li>
+            <li>
+                <code>&lt;button type="submit" name="upload"&gt;Upload&lt;/button&gt;</code>: Is a submit button triggering form submission with the name attribute set to upload.
             </li>
         </ul>
 
-        <h3>Sanitizing User Input:</h3>
+        <h3>PHP Handling of File Upload:</h3>
         <ul>
             <li>
-                <code>$id = $_POST['user_id'];</code>: This line retrieves the <code>user_id</code> from the POST data. Note that it's directly used in the SQL query, which is not safe. It should be sanitized to prevent SQL injection.
+                <code>if (isset($_POST['upload'])) { ... }</code>: Checks if the form has been submitted with the upload button.
+            </li>
+            <li>
+                <code>$target_path = "../Uploads/Images/";</code>: Sets the directory path where uploaded files will be stored.
+            </li>
+            <li>
+                <code>$target_path .= basename($_FILES['image']['name']);</code>: Appends the basename of the uploaded file's original name to the target path.
+            </li>
+            <li>
+                <code>move_uploaded_file($_FILES['image']['tmp_name'], $target_path);</code>: Attempts to move the uploaded file from its temporary location ($_FILES['image']['tmp_name']) to the specified target path ($target_path).
             </li>
         </ul>
 
-        <h3>Database Connection and SQL Preparation:</h3>
+        <h3>Handling Upload Success or Failure:</h3>
         <ul>
-            <li>The script assumes a database connection (<code>$conn</code>) has been previously established.</li>
             <li>
-                <code>$query = "SELECT user_id, user_name, email FROM users WHERE user_id = '$id';"</code>: Defines the SQL query to select user information based on the <code>user_id</code>.
+                If <code>move_uploaded_file()</code> returns true:
+                <ul>
+                    <li><code>$html = "&lt;pre&gt;{$target_path} succesfully uploaded!&lt;/pre&gt;";</code>: Sets a success message displaying the uploaded file's path.
+                </ul>
             </li>
             <li>
-                <code>$result = mysqli_query($conn, $query);</code>: Executes the SQL query. Using direct input like this can lead to SQL injection and should be avoided. Prepared statements should be used instead.
+                If <code>move_uploaded_file()</code> returns false:
+                <ul>
+                    <li><code>$html = '&lt;pre&gt;Your image was not uploaded.&lt;/pre&gt;';</code>: Sets an error message indicating the upload failure.
+                </ul>
             </li>
         </ul>
 
-        <h3>Binding Parameters and Executing the Query:</h3>
-        <ul>
-            <li>
-                Since this example does not use prepared statements, it directly executes the query:<br>
-                <code>$result = mysqli_query($conn, $query);</code>
-            </li>
-        </ul>
-
-        <h3>Binding Results and Storing Them:</h3>
-        <ul>
-            <li>
-                <code>if ($result && mysqli_num_rows($result) > 0) { ... }</code>: Checks if the query returned any rows.
-            </li>
-        </ul>
-
-        <h3>Processing the Query Results:</h3>
-        <ul>
-            <li>
-                <code>while ($row = mysqli_fetch_assoc($result)) { ... }</code>: Iterates through the result set, it retrieves and stores user information in variables.<br>
-                <code>$user_id = $row["user_id"];</code><br>
-                <code>$user_name = $row["user_name"];</code><br>
-                <code>$email = $row["email"];</code><br>
-                <code>$html .= "&lt;p&gt;&lt;span&gt;ID: &lt;/span&gt;{$user_id}&lt;/p&gt;&lt;p&gt;&lt;span&gt;Username: &lt;/span&gt; {$user_name}&lt;/p&gt;&lt;p&gt;&lt;span&gt;Email: &lt;/span&gt; {$email}&lt;/p&gt;";</code>: Inside the loop, it constructs HTML to display user information (ID, Username, Email).
-            </li>
-        </ul>
-
-        <h3>Handling No Results:</h3>
-        <ul>
-            <li>
-                If no user is found:<br>
-                <code>} else {<br>$html = "No user found";<br>}</code>: It outputs a message indicating no user was found with the provided <code>user_id</code>.
-            </li>
-        </ul>
-
-        <h3>Closing Resources:</h3>
-        <ul>
-            <li>
-                <code>mysqli_free_result($result);</code>: Frees the result set to release resources.
-            </li>
-            <li>
-                <code>mysqli_close($conn);</code>: Closes the database connection once the operations are complete.
-            </li>
-        </ul>
-        <br>
-        <h3><span style="color: #D10000;">Security Note:</span></h3>
+        <h3>Security Note:</h3>
         <p>
-            Always sanitize and validate user inputs (<code>$user_id</code> in this case) to prevent SQL injection attacks. Using prepared statements (<code>$stmt->prepare()</code>, <code>$stmt->bind_param()</code>) helps mitigate these risks.</br>
+            Always validate and sanitize user input, especially file uploads (<code>$_FILES['image']['name']</code> in this case), to prevent vulnerabilities like directory traversal and file overwrites.
+            Store uploaded files in a directory that is outside the web root and restrict file permissions to prevent unauthorized access or execution of uploaded files.
+            Consider implementing additional checks such as file type validation (<code>$_FILES['image']['type']</code>) and file size limits to enhance security and prevent abuse.
         </p>
-
+</br>
     </div>
+
+
 
 
 </body>

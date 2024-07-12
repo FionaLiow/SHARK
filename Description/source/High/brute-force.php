@@ -70,84 +70,61 @@
     </div>
     <div class="explanation">
 
-        <h3>Form Handling:</h3>
+        <h3>HTML Form Setup:</h3>
         <ul>
-            <li>
-                The form uses the POST method, so when the form is submitted, the PHP script checks if the request method is POST.
-            </li>
+            <li><code>&lt;div class="form_zone"&gt;</code>: Creates a styled container for the login form.</li>
+            <li><code>&lt;p&gt;Cartoon World Login :&lt;/p&gt;</code>: A paragraph explaining the form's purpose.</li>
+            <li><code>&lt;form action="" method="get"&gt;</code>: Defines a form that submits data via the GET method to the same page.</li>
+            <li><code>&lt;input type="hidden" name="user_token" value="<?php echo $_SESSION['session_token']; ?>"&gt;</code>: Hidden input field to include the Anti-CSRF token in the form submission.</li>
+            <li><code>&lt;input type="text" name="username" id="username" placeholder="Enter the username"&gt;</code>: Text input for the username.</li>
+            <li><code>&lt;input type="text" name="password" id="password" placeholder="Enter the password"&gt;</code>: Text input for the password.</li>
+            <li><code>&lt;button type="submit" name="brute-force-submit"&gt;Login&lt;/button&gt;</code>: Submit button to send the form data.</li>
         </ul>
 
-        <h3>Sanitization:</h3>
+        <h3>Processing the Form Submission:</h3>
         <ul>
-            <li>
-                The selected user ID is retrieved from the form submission (<code>$id = $_POST['user_id_opt'];</code>).
-            </li>
-            <li>
-                To prevent SQL injection attacks, certain substrings ("--" and "or") are removed from the submitted user ID using <code>str_replace</code>.
-            </li>
+            <li><code>if (isset($_GET['brute-force-submit'])) { ... }</code>: Checks if the form was submitted via GET with the brute-force-submit parameter.</li>
+            <li><code>checkToken($_REQUEST['user_token'], $_SESSION['session_token'], 'index.php');</code>: Calls a function to validate the Anti-CSRF token.</li>
+            <li><code>$user = mysqli_real_escape_string($conn, $_GET['username']);</code>: Sanitizes the username to prevent SQL injection.</li>
+            <li><code>$user = stripslashes($user);</code>: Removes backslashes from the username.</li>
+            <li><code>$pass = mysqli_real_escape_string($conn, $_GET['password']);</code>: Sanitizes the password to prevent SQL injection.</li>
+            <li><code>$pass = stripslashes($pass);</code>: Removes backslashes from the password.</li>
+            <li><code>$pass = md5($pass);</code>: Hashes the password using MD5 (note: MD5 is not recommended for secure password hashing).</li>
+            <li><code>$query = "SELECT * FROM users WHERE user_name = '$user' AND password = '$pass';";</code>: Prepares an SQL query to check the username and password.</li>
+            <li><code>$result = mysqli_query($conn, $query);</code>: Executes the query against the database.</li>
         </ul>
 
-        <h3>SQL Query:</h3>
+        <h3>Handling the Query Result:</h3>
         <ul>
-            <li>
-                An SQL query is constructed to select the <code>user_id</code>, <code>user_name</code>, and <code>email</code> from the <code>users</code> table where the <code>user_id</code> matches the sanitized user ID. The <code>LIMIT 1</code> clause ensures that only one result is returned.
-            </li>
+            <li><code>if ($result && mysqli_num_rows($result) == 1) { ... }</code>: Checks if the query returned exactly one row.</li>
+            <li><code>$row = mysqli_fetch_assoc($result);</code>: Fetches the result as an associative array.</li>
+            <li><code>$profilepic = $row["profile_pic"];</code>: Retrieves the profile picture from the result.</li>
+            <li><code>$html = "&lt;p&gt;Welcome to cartoon world, {$user} !&lt;/p&gt;";</code>: Sets a success message if login is successful.</li>
+            <li><code>else { ... }</code>: If the login fails:</li>
+            <ul>
+                <li><code>sleep(rand(0, 3));</code>: Adds a random delay to mitigate brute-force attacks.</li>
+                <li><code>$html = "&lt;pre&gt;&lt;br /&gt;Username and/or password incorrect.&lt;/pre&gt;";</code>: Sets a failure message.</li>
+            </ul>
+            <li><code>mysqli_free_result($result);</code>: Frees the result set to release resources.</li>
+            <li><code>mysqli_close($conn);</code>: Closes the database connection.</li>
         </ul>
 
-        <h3>Executing the Query:</h3>
+        <h3>Anti-CSRF Token Generation:</h3>
         <ul>
-            <li>
-                The query is executed using <code>mysqli_query</code>.
-            </li>
-            <li>
-                If the query is successful and there are results (<code>mysqli_num_rows($result) > 0</code>), a loop iterates through the results and retrieves the user information.
-            </li>
+            <li><code>generateSessionToken();</code>: Calls a function to generate a new Anti-CSRF token.</li>
         </ul>
-
-        <h3>Display Results:</h3>
+</br>
+        <h3><span style="color: #D10000;">Security Considerations:</span></h3>
         <ul>
-            <li>
-                The retrieved user information is formatted as HTML and appended to the <code>$html</code> variable.
-            </li>
-            <li>
-                If no user is found, the <code>$html</code> variable is set to display a "No user found" message.
-            </li>
+            <li><strong>Anti-CSRF Protection:</strong> Uses a token to prevent CSRF attacks.</li>
+            <li><strong>Input Sanitization:</strong> Sanitizes user inputs to prevent SQL injection.</li>
+            <li><strong>Password Hashing:</strong> Uses MD5 for password hashing (recommendation: use stronger hashing algorithms like bcrypt or Argon2).</li>
+            <li><strong>Random Sleep:</strong> Adds a random delay to mitigate brute-force attacks.</li>
         </ul>
-
-        <h3>Resource Management:</h3>
-        <ul>
-            <li>
-                The memory associated with the result set is freed using <code>mysqli_free_result($result)</code>.
-            </li>
-            <li>
-                The database connection is closed using <code>mysqli_close($conn)</code>.
-            </li>
-        </ul>
-
-        <h3><span style="color: #D10000;">Security Note:</span></h3>
-        <p>
-            Always sanitize and validate user inputs, such as <code>$user_id_opt</code> in this case, to prevent SQL injection attacks. Simply removing characters like "--" and "or" is not sufficient; consider the following:
-        </p>
-        <ul>
-            <li>
-                <strong>Use Prepared Statements:</strong> Prefer prepared statements and parameterized queries to separate SQL logic from data and prevent malicious input from altering query structure.
-            </li>
-            <li>
-                <strong>Input Validation:</strong> Validate user inputs to ensure they conform to expected formats and ranges before using them in SQL queries. This prevents both SQL injection and other input-related vulnerabilities.
-            </li>
-            <li>
-                <strong>Escape Special Characters:</strong> If constructing SQL queries manually, use appropriate escaping functions (e.g., <code>mysqli_real_escape_string</code>) specific to your database to prevent special characters from being interpreted as part of the query.
-            </li>
-            <li>
-                <strong>Limit Privileges:</strong> Restrict database user privileges to minimize potential impact of a successful attack. Grant only necessary permissions for each user role.
-            </li>
-        </ul>
-        <p>
-            Implementing these practices ensures robust protection against SQL injection and enhances overall application security.
-        </p>
-
 
     </div>
+
+
 
 
 </body>

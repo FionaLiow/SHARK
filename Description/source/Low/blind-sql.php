@@ -46,6 +46,7 @@
     <div class="heading">
         <h3>&nbsp;&nbsp;&nbsp;Explanations</h3>
     </div>
+
     <div class="explanation">
 
         <h3>Checking Request Method:</h3>
@@ -55,7 +56,7 @@
             </li>
         </ul>
 
-        <h3>Sanitizing User Input:</h3>
+        <h3>Retrieving User Input:</h3>
         <ul>
             <li>
                 <code>$id = $_POST['user_id'];</code>: This line retrieves the <code>user_id</code> from the POST data. Note that it's directly used in the SQL query, which is not safe. It should be sanitized to prevent SQL injection.
@@ -73,37 +74,26 @@
             </li>
         </ul>
 
-        <h3>Binding Parameters and Executing the Query:</h3>
-        <ul>
-            <li>
-                Since this example does not use prepared statements, it directly executes the query:<br>
-                <code>$result = mysqli_query($conn, $query);</code>
-            </li>
-        </ul>
-
-        <h3>Binding Results and Storing Them:</h3>
-        <ul>
-            <li>
-                <code>if ($result && mysqli_num_rows($result) > 0) { ... }</code>: Checks if the query returned any rows.
-            </li>
-        </ul>
-
         <h3>Processing the Query Results:</h3>
         <ul>
             <li>
-                <code>while ($row = mysqli_fetch_assoc($result)) { ... }</code>: Iterates through the result set, it retrieves and stores user information in variables.<br>
-                <code>$user_id = $row["user_id"];</code><br>
-                <code>$user_name = $row["user_name"];</code><br>
-                <code>$email = $row["email"];</code><br>
-                <code>$html .= "&lt;p&gt;&lt;span&gt;ID: &lt;/span&gt;{$user_id}&lt;/p&gt;&lt;p&gt;&lt;span&gt;Username: &lt;/span&gt; {$user_name}&lt;/p&gt;&lt;p&gt;&lt;span&gt;Email: &lt;/span&gt; {$email}&lt;/p&gt;";</code>: Inside the loop, it constructs HTML to display user information (ID, Username, Email).
+                <code>if ($result) { ... }</code>: Checks if the query executed successfully.
+            </li>
+            <li>
+                <code>$exists = mysqli_num_rows($result) > 0;</code>: Checks if the query returned any rows.
+            </li>
+            <li>
+                If rows exist, it sets <code>$html = '&lt;p&gt;User ID &lt;span style="color: #00008B;"&gt;EXISTS&lt;/span&gt; in the database.&lt;/p&gt;';</code> indicating the user ID exists in the database.
+            </li>
+            <li>
+                If no rows exist, it sets the HTTP response code to 404 and constructs <code>$html = '&lt;p&gt;User ID is &lt;span style="color: red;"&gt;MISSING&lt;/span&gt; from the database.&lt;/p&gt;';</code> indicating the user ID is missing from the database.
             </li>
         </ul>
 
-        <h3>Handling No Results:</h3>
+        <h3>Error Handling:</h3>
         <ul>
             <li>
-                If no user is found:<br>
-                <code>} else {<br>$html = "No user found";<br>}</code>: It outputs a message indicating no user was found with the provided <code>user_id</code>.
+                If the query fails, <code>$html = "Error: " . mysqli_error($conn);</code> captures the error message.
             </li>
         </ul>
 
@@ -121,8 +111,9 @@
         <p>
             Always sanitize and validate user inputs (<code>$user_id</code> in this case) to prevent SQL injection attacks. Using prepared statements (<code>$stmt->prepare()</code>, <code>$stmt->bind_param()</code>) helps mitigate these risks.</br>
         </p>
-
+        </br>
     </div>
+
 
 
 </body>

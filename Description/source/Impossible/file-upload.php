@@ -85,91 +85,51 @@
     </div>
     <div class="explanation">
 
-        <h3>Checking Request Method:</h3>
+        <h3>File Upload Handling:</h3>
         <ul>
-            <li>
-                <code>if ($_SERVER["REQUEST_METHOD"] == "POST") { ... }</code>: This condition checks if the current request method is POST. This ensures that the code inside the block executes only when the form with <code>method="post"</code> is submitted.
+            <li>The form (<code>&lt;form action="" method="post" enctype="multipart/form-data"&gt;</code>) allows users to upload images (<code>&lt;input type="file" name="image"&gt;</code>). It includes a hidden field for Anti-CSRF token (<code>$_SESSION['session_token']</code>), ensuring the form submission is from an authenticated session.</li>
+        </ul>
+
+        <h3>Anti-CSRF Protection:</h3>
+        <ul>
+            <li>The code uses <code>checkToken()</code> and <code>generateSessionToken()</code> functions to validate and generate Anti-CSRF tokens respectively. This prevents CSRF attacks by ensuring that the request originates from the expected user session.</li>
+        </ul>
+
+        <h3>File Validation and Processing:</h3>
+        <ul>
+            <li>Validates the uploaded file:
+                <ul>
+                    <li>Checks file extension (<code>$uploaded_ext</code>) and size (<code>$uploaded_size</code>) to ensure it meets specified criteria (JPEG or PNG format, size limit of 10MB).</li>
+                    <li>Verifies file type (<code>$uploaded_type</code>) to ensure it's an image (<code>image/jpeg</code> or <code>image/png</code>) using <code>getimagesize($uploaded_tmp)</code>.</li>
+                </ul>
+            </li>
+            <li>Secure File Handling:
+                <ul>
+                    <li>Generates a unique filename (<code>$target_file</code>) using <code>md5(uniqid() . $uploaded_name)</code> to prevent filename collisions and potential overwriting of existing files.</li>
+                    <li>Uses a temporary file (<code>$temp_file</code>) to process the uploaded image, ensuring any metadata is stripped by re-encoding the image using PHP GD library (<code>imagecreatefromjpeg()</code> and <code>imagecreatefrompng()</code>).</li>
+                </ul>
+            </li>
+            <li>Directory Traversal Prevention:
+                <ul>
+                    <li>Constructs the final file path (<code>$target_path . $target_file</code>) ensuring it resides within a specified directory (<code>../Uploads/Images/</code>) and uses <code>rename()</code> to move the processed image to its destination, mitigating directory traversal attacks.</li>
+                </ul>
             </li>
         </ul>
 
-        <h3>Sanitizing User Input:</h3>
+        <h3>Error Handling:</h3>
         <ul>
-            <li>
-                <code>$user_id = intval($_POST['user_id']);</code>: This line retrieves the <code>user_id</code> from the POST data and converts it to an integer using <code>intval()</code> to ensure it's safe for database queries.
-            </li>
+            <li>Provides informative error messages (<code>&lt;pre&gt;</code>) to users about why an upload might fail (e.g., invalid file type or size).</li>
+            <li>Deletes temporary files (<code>$temp_file</code>) after successful or failed upload attempts, maintaining clean server-side file management.</li>
         </ul>
-
-        <h3>Database Connection and SQL Preparation:</h3>
+</br>
+        <h3><span style="color: #D10000;">Security Notes:</span></h3>
         <ul>
-            <li>The script assumes a database connection (<code>$conn</code>) has been previously established.</li>
-            <li>
-                <code>$sql = "SELECT user_id, user_name, email FROM users WHERE user_id = ?";</code>: Defines the SQL query to select user information based on the <code>user_id</code>.
-            </li>
-            <li>
-                <code>$stmt = $conn->prepare($sql);</code>: Prepares the SQL statement for execution.
-            </li>
+            <li>Always validate and sanitize file uploads thoroughly to prevent malicious file injections or execution.</li>
+            <li>Utilize server-side checks (<code>getimagesize()</code>, MIME type validation) in addition to client-side checks to ensure uploaded content is safe and expected.</li>
         </ul>
-
-        <h3>Binding Parameters and Executing the Query:</h3>
-        <ul>
-            <li>
-                <code>$stmt->bind_param("i", $user_id);</code>: Binds the <code>user_id</code> parameter to the prepared SQL statement (<code>i</code> indicates it's an integer).
-            </li>
-            <li>
-                <code>$stmt->execute();</code>: Executes the prepared statement with the bound parameter.
-            </li>
-        </ul>
-
-        <h3>Binding Results and Storing Them:</h3>
-        <ul>
-            <li>
-                <code>$stmt->bind_result($id, $username, $email);</code>: Binds variables (<code>$id</code>, <code>$username</code>, <code>$email</code>) to the prepared statement to store the result.
-            </li>
-            <li>
-                <code>$stmt->store_result();</code>: Stores the result set from the prepared statement.
-            </li>
-        </ul>
-
-        <h3>Processing the Query Results:</h3>
-        <ul>
-            <li>
-                <code>if ($stmt->num_rows > 0) { ... }</code>: Checks if any rows were returned by the query.
-            </li>
-            <li>
-                <code>while ($stmt->fetch()) { ... }</code>: Iterates through the result set. Assuming only one user is expected (based on <code>user_id</code> uniqueness), it retrieves and prints user information.
-            </li>
-        </ul>
-
-        <h3>Outputting User Information:</h3>
-        <ul>
-            <li>
-                Inside the <code>while</code> loop, it echoes HTML to display user information (ID, Username, Email). <code>htmlspecialchars()</code> is used to prevent XSS (cross-site scripting) attacks by escaping special characters in the output.
-            </li>
-        </ul>
-
-        <h3>Handling No Results:</h3>
-        <ul>
-            <li>
-                If no user is found (<code>$stmt->num_rows <= 0</code>), it outputs a message indicating no user was found with the provided <code>user_id</code>.
-            </li>
-        </ul>
-
-        <h3>Closing Resources:</h3>
-        <ul>
-            <li>
-                <code>$stmt->close();</code>: Closes the prepared statement to free up resources.
-            </li>
-            <li>
-                <code>$conn->close();</code>: Closes the database connection once the operations are complete.
-            </li>
-        </ul>
-        </br>
-        <h3><span style="color: #D10000;">Security Note:</span></h3>
-        <p>
-            Always sanitize and validate user inputs (<code>$user_id</code> in this case) to prevent SQL injection attacks. Using prepared statements (<code>$stmt->prepare()</code>, <code>$stmt->bind_param()</code>) helps mitigate these risks.
-        </p>
 
     </div>
+
 
 
 </body>

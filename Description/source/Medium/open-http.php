@@ -61,84 +61,47 @@
     </div>
     <div class="explanation">
 
-        <h3>HTML Form Submission:</h3>
+        <h3>Checking and Handling Redirect:</h3>
         <ul>
-            <li>
-                This HTML code defines a form that submits data using the POST method to the same URL (action="" means it submits to the current page).
-            </li>
-            <li>
-                Inside the form, there's a <code>&lt;select&gt;</code> element (user_id_opt) with three <code>&lt;option&gt;</code> elements, each representing a user ID (1, 2, 3).
-            </li>
-            <li>
-                The <code>&lt;button&gt;</code> element triggers the form submission when clicked.
-            </li>
+            <li><code>if (array_key_exists("redirect", $_GET) && $_GET['redirect'] != "") { ... }</code>: Checks if the redirect parameter exists in the GET request and is not empty.</li>
+            <li><code>preg_match("/http:\/\/|https:\/\//i", $_GET['redirect'])</code>: Uses a regular expression to check if the redirect parameter contains http:// or https://, indicating an absolute URL.</li>
+            <li><strong>If an absolute URL is detected:</strong></li>
+            <ul>
+                <li>Sets HTTP response code to 500 (<code>http_response_code(500);</code>).</li>
+                <li>Outputs a warning message within <code>&lt;div class="body-content"&gt;</code>, informing that absolute URLs are not allowed.</li>
+            </ul>
+            <li><strong>If the redirect parameter is a relative URL:</strong></li>
+            <ul>
+                <li>Redirects the user to the specified relative URL using <code>header("location: " . $_GET['redirect']);</code>.</li>
+                <li><code>exit;</code> is used after each condition to terminate script execution immediately.</li>
+            </ul>
         </ul>
 
-        <h3>PHP Condition (<code>if ($_SERVER["REQUEST_METHOD"] == "POST")</code>):</h3>
+        <h3>HTML Content Display:</h3>
         <ul>
-            <li>
-                Checks if the form has been submitted using the POST method.
-            </li>
+            <li><strong>If the redirect parameter is not set or is empty:</strong></li>
+            <ul>
+                <li>Sets HTTP response code to 500 (<code>http_response_code(500);</code>).</li>
+                <li>Displays HTML content within <code>&lt;div class="body-content"&gt;</code>:</li>
+                <ul>
+                    <li><code>&lt;div class="challenge-title"&gt;</code>: Displays a challenge title.</li>
+                    <li><code>&lt;h1&gt;Open HTTP Redirect&lt;/h1&gt;</code>: Main title for the challenge.</li>
+                    <li><code>&lt;h2&gt; - &lt;span style="color: #FFA500;"&gt;Medium&lt;/span&gt;&lt;/h2&gt;</code>: Subtitle indicating the difficulty level.</li>
+                    <li><code>&lt;div class="form_zone"&gt;</code>: Styled container for the form.</li>
+                    <li>Provides a description and lists two links to food reviews (Food Review 1 and Food Review 2) within an unordered list (<code>&lt;ul&gt;</code>).</li>
+                </ul>
+            </ul>
         </ul>
 
-        <h3>Retrieve <code>user_id_opt</code> from <code>$_POST</code>:</h3>
+        <h3><span style="color: #D10000;">Security Considerations:</span></h3>
         <ul>
-            <li>
-                Retrieves the selected <code>user_id_opt</code> from the form submission.
-            </li>
+            <li><strong>Preventing Open Redirects:</strong> Blocks redirection to absolute URLs (http:// or https://) to mitigate open redirect vulnerabilities.</li>
+            <li><strong>HTTP Response Codes:</strong> Sets HTTP response code to 500 when encountering potential security risks or unexpected conditions, providing appropriate feedback to users.</li>
+            <li><strong>User Input Validation:</strong> Uses regular expression (<code>preg_match</code>) to validate and sanitize user input (<code>$_GET['redirect']</code>), ensuring that only relative URLs are allowed.</li>
         </ul>
-
-        <h3>SQL Query (<code>$query</code>):</h3>
-        <ul>
-            <li>
-                Constructs an SQL query to select <code>user_id</code>, <code>user_name</code>, and <code>email</code> from the <code>users</code> table where <code>user_id</code> matches the selected value.
-            </li>
-            <li>
-                Executes the SQL query using <code>mysqli_query()</code> with the connection <code>$conn</code>. Direct input like this can lead to SQL injection and should be avoided; prepared statements should be used instead.
-            </li>
-        </ul>
-
-        <h3>Fetch Results (<code>mysqli_fetch_assoc()</code>):</h3>
-        <ul>
-            <li>
-                If the query returns results (<code>$result</code>), iterates through each row using <code>mysqli_fetch_assoc()</code> to fetch an associative array (<code>$row</code>) containing user data.
-            </li>
-        </ul>
-
-        <h3>Format HTML Output:</h3>
-        <ul>
-            <li>
-                Formats the fetched data into HTML format using string concatenation (<code>$html .= ...</code>).
-            </li>
-        </ul>
-
-        <h3>Handle No Results:</h3>
-        <ul>
-            <li>
-                If no user is found (<code>$result</code> is empty), sets <code>$html</code> to "No user found".
-            </li>
-        </ul>
-
-        <h3>Free Result Set (<code>mysqli_free_result()</code>):</h3>
-        <ul>
-            <li>
-                Frees memory associated with the result set.
-            </li>
-        </ul>
-
-        <h3>Close Database Connection (<code>mysqli_close()</code>):</h3>
-        <ul>
-            <li>
-                Closes the database connection (<code>$conn</code>) to free resources.
-            </li>
-        </ul>
-
-        <h3><span style="color: #D10000;">Security Note:</span></h3>
-        <p>
-            Always sanitize and validate user inputs (<code>$user_id_opt</code> in this case) to prevent SQL injection attacks. Using prepared statements (<code>$stmt-&gt;prepare()</code>, <code>$stmt-&gt;bind_param()</code>) helps mitigate these risks effectively.
-        </p>
 
     </div>
+
 
 
 </body>

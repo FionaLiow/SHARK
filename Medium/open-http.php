@@ -36,6 +36,8 @@ http_response_code(500);
             <li><a href='?redirect=../Profile/food_review/fr1.php'>Food Review 1</a></li>
             <li><a href='?redirect=../Profile/food_review/fr2.php'>Food Review 2</a></li>
         </ul>
+
     </div>
 
+</br>
 </div>

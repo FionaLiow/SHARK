@@ -61,82 +61,32 @@
     </div>
     <div class="explanation">
 
-        <h3>Form Handling:</h3>
+        <h3>Form Structure (<code>&lt;form&gt;</code>):</h3>
         <ul>
-            <li>
-                The form uses the POST method, so when the form is submitted, the PHP script checks if the request method is POST.
-            </li>
+            <li>Displays a form with <code>enctype="multipart/form-data"</code> for uploading files.</li>
+            <li>Includes an <code>&lt;input type="file" name="image"&gt;</code> element named "image" and a submit button.</li>
         </ul>
 
-        <h3>Sanitization:</h3>
+        <h3>PHP Processing (<code>if (isset($_POST['upload'])))</code>:</h3>
         <ul>
-            <li>
-                The selected user ID is retrieved from the form submission (<code>$id = $_POST['user_id_opt'];</code>).
-            </li>
-            <li>
-                To prevent SQL injection attacks, certain substrings ("--" and "or") are removed from the submitted user ID using <code>str_replace</code>.
-            </li>
+            <li>Checks if the form has been submitted with the name "upload".</li>
         </ul>
 
-        <h3>SQL Query:</h3>
+        <h3>File Handling:</h3>
         <ul>
-            <li>
-                An SQL query is constructed to select the <code>user_id</code>, <code>user_name</code>, and <code>email</code> from the <code>users</code> table where the <code>user_id</code> matches the sanitized user ID. The <code>LIMIT 1</code> clause ensures that only one result is returned.
-            </li>
+            <li><strong>Target Path Calculation (<code>$target_path</code>):</strong> Sets the target directory path (<code>../Uploads/Images/</code>) for storing uploaded images. Appends the basename of the uploaded file (<code>$_FILES['image']['name']</code>) to <code>$target_path</code>.</li>
+            <li><strong>File Information Retrieval:</strong> Retrieves the name (<code>$uploaded_name</code>), temporary path (<code>$uploaded_tmp</code>), extension (<code>$uploaded_ext</code>), and size (<code>$uploaded_size</code>) of the uploaded file.</li>
+            <li><strong>File Validation:</strong> Checks if the file extension (<code>$uploaded_ext</code>) is either "jpg", "jpeg", or "png" using <code>strtolower()</code> for case-insensitivity. Validates if the file size (<code>$uploaded_size</code>) is less than 10,000,000,000 bytes (approximately 10GB). Uses <code>getimagesize($uploaded_tmp)</code> to verify that the uploaded file is indeed an image.</li>
+            <li><strong>File Upload (<code>move_uploaded_file()</code>):</strong> If all validations pass, moves the uploaded file from its temporary location (<code>$uploaded_tmp</code>) to the target path (<code>$target_path</code>). Updates <code>$html</code> variable with a success message ("<code>$target_path successfully uploaded!</code>") if the file upload is successful.</li>
+            <li><strong>Error Handling:</strong> If any validation fails (invalid file type, size, or not an image), updates <code>$html</code> with an error message indicating the reason for upload failure.</li>
         </ul>
-
-        <h3>Executing the Query:</h3>
+</br>
+        <h3><span style="color: #D10000;">Security Considerations:</span></h3>
         <ul>
-            <li>
-                The query is executed using <code>mysqli_query</code>.
-            </li>
-            <li>
-                If the query is successful and there are results (<code>mysqli_num_rows($result) > 0</code>), a loop iterates through the results and retrieves the user information.
-            </li>
+            <li><strong>File Type Validation:</strong> Ensures that only JPEG and PNG images are accepted using a whitelist approach (<code>strtolower()</code> check).</li>
+            <li><strong>File Size Limit:</strong> Limits the maximum file size to prevent server overload (<code>$uploaded_size</code> check).</li>
+            <li><strong>Temporary Path Usage:</strong> Utilizes the temporary path (<code>$uploaded_tmp</code>) for handling file uploads, avoiding direct execution from user-supplied paths.</li>
         </ul>
-
-        <h3>Display Results:</h3>
-        <ul>
-            <li>
-                The retrieved user information is formatted as HTML and appended to the <code>$html</code> variable.
-            </li>
-            <li>
-                If no user is found, the <code>$html</code> variable is set to display a "No user found" message.
-            </li>
-        </ul>
-
-        <h3>Resource Management:</h3>
-        <ul>
-            <li>
-                The memory associated with the result set is freed using <code>mysqli_free_result($result)</code>.
-            </li>
-            <li>
-                The database connection is closed using <code>mysqli_close($conn)</code>.
-            </li>
-        </ul>
-
-        <h3><span style="color: #D10000;">Security Note:</span></h3>
-        <p>
-            Always sanitize and validate user inputs, such as <code>$user_id_opt</code> in this case, to prevent SQL injection attacks. Simply removing characters like "--" and "or" is not sufficient; consider the following:
-        </p>
-        <ul>
-            <li>
-                <strong>Use Prepared Statements:</strong> Prefer prepared statements and parameterized queries to separate SQL logic from data and prevent malicious input from altering query structure.
-            </li>
-            <li>
-                <strong>Input Validation:</strong> Validate user inputs to ensure they conform to expected formats and ranges before using them in SQL queries. This prevents both SQL injection and other input-related vulnerabilities.
-            </li>
-            <li>
-                <strong>Escape Special Characters:</strong> If constructing SQL queries manually, use appropriate escaping functions (e.g., <code>mysqli_real_escape_string</code>) specific to your database to prevent special characters from being interpreted as part of the query.
-            </li>
-            <li>
-                <strong>Limit Privileges:</strong> Restrict database user privileges to minimize potential impact of a successful attack. Grant only necessary permissions for each user role.
-            </li>
-        </ul>
-        <p>
-            Implementing these practices ensures robust protection against SQL injection and enhances overall application security.
-        </p>
-
 
     </div>
 

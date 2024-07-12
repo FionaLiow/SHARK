@@ -63,84 +63,41 @@ http_response_code(500);
     </div>
     <div class="explanation">
 
-        <h3>Form Handling:</h3>
+        <h3>Initial Check (<code>if (array_key_exists("redirect", $_GET) && $_GET['redirect'] != ""))</code>:</h3>
         <ul>
-            <li>
-                The form uses the POST method, so when the form is submitted, the PHP script checks if the request method is POST.
-            </li>
+            <li>Verifies if the "redirect" key exists in the GET parameters and is not empty.</li>
         </ul>
 
-        <h3>Sanitization:</h3>
+        <h3>Validation of Redirect URL:</h3>
         <ul>
-            <li>
-                The selected user ID is retrieved from the form submission (<code>$id = $_POST['user_id_opt'];</code>).
-            </li>
-            <li>
-                To prevent SQL injection attacks, certain substrings ("--" and "or") are removed from the submitted user ID using <code>str_replace</code>.
-            </li>
+            <li><strong>Checks if the "redirect" parameter (<code>$_GET['redirect']</code>) contains either "fr1.php" or "fr2.php" using <code>strpos()</code> function.</strong></li>
+            <li>If the condition is met (<code>strpos() !== false</code>), it performs a redirect using <code>header("location: " . $_GET['redirect'])</code>.</li>
+            <li>Immediately exits the script after performing the redirect to prevent further execution.</li>
         </ul>
 
-        <h3>SQL Query:</h3>
+        <h3>Absolute URL Block:</h3>
         <ul>
-            <li>
-                An SQL query is constructed to select the <code>user_id</code>, <code>user_name</code>, and <code>email</code> from the <code>users</code> table where the <code>user_id</code> matches the sanitized user ID. The <code>LIMIT 1</code> clause ensures that only one result is returned.
-            </li>
+            <li>If the "redirect" parameter does not contain "fr1.php" or "fr2.php", indicating an attempt to redirect to an absolute URL or unauthorized resource:</li>
+            <li>Sets HTTP response code 500 (Internal Server Error).</li>
+            <li>Displays an error message within a <code>&lt;div class="body-content"&gt;</code> block, indicating that absolute URLs are not allowed.</li>
         </ul>
 
-        <h3>Executing the Query:</h3>
+        <h3>Fallback Response (<code>http_response_code(500)</code>):</h3>
         <ul>
-            <li>
-                The query is executed using <code>mysqli_query</code>.
-            </li>
-            <li>
-                If the query is successful and there are results (<code>mysqli_num_rows($result) > 0</code>), a loop iterates through the results and retrieves the user information.
-            </li>
+            <li>If the initial condition (<code>if (array_key_exists("redirect", $_GET) && $_GET['redirect'] != ""))</code> is not met (no valid "redirect" parameter provided):</li>
+            <li>Sets HTTP response code 500 (Internal Server Error).</li>
+            <li>Renders the main content block within <code>&lt;div class="body-content"&gt;</code>, presenting the challenge title and a form with links to food reviews.</li>
         </ul>
-
-        <h3>Display Results:</h3>
+</br>
+        <h3><span style="color: #D10000;">Security Considerations:</span></h3>
         <ul>
-            <li>
-                The retrieved user information is formatted as HTML and appended to the <code>$html</code> variable.
-            </li>
-            <li>
-                If no user is found, the <code>$html</code> variable is set to display a "No user found" message.
-            </li>
+            <li><strong>Open Redirect Prevention:</strong> Restricts redirects to specific internal URLs ("fr1.php" and "fr2.php") to mitigate the risk of open redirects.</li>
+            <li><strong>HTTP Response Code:</strong> Uses appropriate HTTP response codes (500) to indicate server errors or unauthorized attempts.</li>
+            <li><strong>Error Messaging:</strong> Provides clear error messaging ("<em>Absolute URLs not allowed.</em>") within a styled <code>&lt;div&gt;</code> to inform users of policy violations.</li>
         </ul>
-
-        <h3>Resource Management:</h3>
-        <ul>
-            <li>
-                The memory associated with the result set is freed using <code>mysqli_free_result($result)</code>.
-            </li>
-            <li>
-                The database connection is closed using <code>mysqli_close($conn)</code>.
-            </li>
-        </ul>
-
-        <h3><span style="color: #D10000;">Security Note:</span></h3>
-        <p>
-            Always sanitize and validate user inputs, such as <code>$user_id_opt</code> in this case, to prevent SQL injection attacks. Simply removing characters like "--" and "or" is not sufficient; consider the following:
-        </p>
-        <ul>
-            <li>
-                <strong>Use Prepared Statements:</strong> Prefer prepared statements and parameterized queries to separate SQL logic from data and prevent malicious input from altering query structure.
-            </li>
-            <li>
-                <strong>Input Validation:</strong> Validate user inputs to ensure they conform to expected formats and ranges before using them in SQL queries. This prevents both SQL injection and other input-related vulnerabilities.
-            </li>
-            <li>
-                <strong>Escape Special Characters:</strong> If constructing SQL queries manually, use appropriate escaping functions (e.g., <code>mysqli_real_escape_string</code>) specific to your database to prevent special characters from being interpreted as part of the query.
-            </li>
-            <li>
-                <strong>Limit Privileges:</strong> Restrict database user privileges to minimize potential impact of a successful attack. Grant only necessary permissions for each user role.
-            </li>
-        </ul>
-        <p>
-            Implementing these practices ensures robust protection against SQL injection and enhances overall application security.
-        </p>
-
 
     </div>
+
 
 
 </body>

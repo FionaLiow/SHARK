@@ -60,83 +60,87 @@ if (isset(<span class="php-variable">$_GET</span>[<span class="php-string">'brut
     </div>
     <div class="explanation">
 
-        <h3>HTML Form Submission:</h3>
+        <h3>HTML Form for Login:</h3>
         <ul>
             <li>
-                This HTML code defines a form that submits data using the POST method to the same URL (action="" means it submits to the current page).
+                <code>&lt;div class="form_zone"&gt;</code>: Creates a styled container for the form.
             </li>
             <li>
-                Inside the form, there's a <code>&lt;select&gt;</code> element (user_id_opt) with three <code>&lt;option&gt;</code> elements, each representing a user ID (1, 2, 3).
+                <code>&lt;p&gt;Cartoon World Login :&lt;/p&gt;</code>: Provides a prompt for the user.
             </li>
             <li>
-                The <code>&lt;button&gt;</code> element triggers the form submission when clicked.
+                <code>&lt;form action="" method="get"&gt;</code>: Sets up a form to submit data via GET to the same page (action="" means the form submits to itself).
+            </li>
+            <li>
+                <code>&lt;input type="text" name="username" id="username" placeholder="Enter the username"&gt;</code>: Allows users to enter their username.
+            </li>
+            <li>
+                <code>&lt;input type="text" name="password" id="password" placeholder="Enter the password"&gt;</code>: Allows users to enter their password.
+            </li>
+            <li>
+                <code>&lt;button type="submit" name="brute-force-submit"&gt;Login&lt;/button&gt;</code>: Is a submit button triggering form submission with the name attribute set to brute-force-submit.
             </li>
         </ul>
 
-        <h3>PHP Condition (<code>if ($_SERVER["REQUEST_METHOD"] == "POST")</code>):</h3>
+        <h3>PHP Handling of Login Form Submission:</h3>
         <ul>
             <li>
-                Checks if the form has been submitted using the POST method.
+                <code>if (isset($_GET['brute-force-submit'])) { ... }</code>: Checks if the form has been submitted using the GET method and if the brute-force-submit button has been clicked.
+            </li>
+            <li>
+                <code>$user = mysqli_real_escape_string($conn, $_GET['username']);</code>: Uses mysqli_real_escape_string() to sanitize and escape the username input for safe use in SQL queries.
+            </li>
+            <li>
+                <code>$pass = mysqli_real_escape_string($conn, $_GET['password']);</code>: Uses mysqli_real_escape_string() to sanitize and escape the password input for safe use in SQL queries.
+            </li>
+            <li>
+                <code>$pass = md5($pass);</code>: Hashes the password using MD5. Note that MD5 is not recommended for password hashing due to its vulnerabilities.
+            </li>
+            <li>
+                <code>$query = "SELECT * FROM users WHERE user_name = '$user' AND password = '$pass';";</code>: Constructs the SQL query to select user information based on the sanitized username and hashed password.
+            </li>
+            <li>
+                <code>$result = mysqli_query($conn, $query);</code>: Executes the SQL query.
             </li>
         </ul>
 
-        <h3>Retrieve <code>user_id_opt</code> from <code>$_POST</code>:</h3>
+        <h3>Processing Query Results:</h3>
         <ul>
             <li>
-                Retrieves the selected <code>user_id_opt</code> from the form submission.
+                <code>if ($result && mysqli_num_rows($result) == 1) { ... }</code>: Checks if the query executed successfully and returned exactly one row.
+            </li>
+            <li>
+                If successful:
+                <ul>
+                    <li><code>$html = "&lt;p&gt;Welcome to cartoon world, {$user} !&lt;/p&gt;";</code>: Displays a welcome message upon successful login.</li>
+                </ul>
+            </li>
+            <li>
+                If login fails:
+                <ul>
+                    <li><code>sleep(2);</code>: Introduces a 2-second delay to simulate brute-force protection or slow down attacks.</li>
+                    <li><code>$html = "&lt;pre&gt;&lt;br /&gt;Username and/or password incorrect.&lt;/pre&gt;";</code>: Sets an error message indicating that the username and/or password is incorrect.</li>
+                </ul>
             </li>
         </ul>
 
-        <h3>SQL Query (<code>$query</code>):</h3>
+        <h3>Closing Database Connection:</h3>
         <ul>
             <li>
-                Constructs an SQL query to select <code>user_id</code>, <code>user_name</code>, and <code>email</code> from the <code>users</code> table where <code>user_id</code> matches the selected value.
+                <code>mysqli_free_result($result);</code>: Frees the result set to release resources.
             </li>
             <li>
-                Executes the SQL query using <code>mysqli_query()</code> with the connection <code>$conn</code>. Direct input like this can lead to SQL injection and should be avoided; prepared statements should be used instead.
+                <code>mysqli_close($conn);</code>: Closes the database connection once operations are complete.
             </li>
         </ul>
-
-        <h3>Fetch Results (<code>mysqli_fetch_assoc()</code>):</h3>
-        <ul>
-            <li>
-                If the query returns results (<code>$result</code>), iterates through each row using <code>mysqli_fetch_assoc()</code> to fetch an associative array (<code>$row</code>) containing user data.
-            </li>
-        </ul>
-
-        <h3>Format HTML Output:</h3>
-        <ul>
-            <li>
-                Formats the fetched data into HTML format using string concatenation (<code>$html .= ...</code>).
-            </li>
-        </ul>
-
-        <h3>Handle No Results:</h3>
-        <ul>
-            <li>
-                If no user is found (<code>$result</code> is empty), sets <code>$html</code> to "No user found".
-            </li>
-        </ul>
-
-        <h3>Free Result Set (<code>mysqli_free_result()</code>):</h3>
-        <ul>
-            <li>
-                Frees memory associated with the result set.
-            </li>
-        </ul>
-
-        <h3>Close Database Connection (<code>mysqli_close()</code>):</h3>
-        <ul>
-            <li>
-                Closes the database connection (<code>$conn</code>) to free resources.
-            </li>
-        </ul>
-
+</br>
         <h3><span style="color: #D10000;">Security Note:</span></h3>
         <p>
-            Always sanitize and validate user inputs (<code>$user_id_opt</code> in this case) to prevent SQL injection attacks. Using prepared statements (<code>$stmt-&gt;prepare()</code>, <code>$stmt-&gt;bind_param()</code>) helps mitigate these risks effectively.
+            Sanitizing and escaping user input (<code>mysqli_real_escape_string()</code>) helps prevent SQL injection attacks.
+            Using MD5 for password hashing (<code>$pass = md5($pass);</code>) is not secure; consider using stronger algorithms like bcrypt or Argon2.
+            Implementing a delay (<code>sleep(2);</code>) as a brute-force protection mechanism is rudimentary and not recommended; instead, use more advanced techniques like account lockout mechanisms or CAPTCHA challenges.
         </p>
-
+</br>
     </div>
 
 

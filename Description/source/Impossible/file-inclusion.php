@@ -54,91 +54,30 @@
     </div>
     <div class="explanation">
 
-        <h3>Checking Request Method:</h3>
+        <h3>File Inclusion Security:</h3>
         <ul>
-            <li>
-                <code>if ($_SERVER["REQUEST_METHOD"] == "POST") { ... }</code>: This condition checks if the current request method is POST. This ensures that the code inside the block executes only when the form with <code>method="post"</code> is submitted.
-            </li>
+            <li>The code restricts inclusion to specific files (<code>profile1.php</code>, <code>profile2.php</code>, <code>profile3.php</code>) using an array whitelist (<code>$allowed_files</code>). This helps prevent arbitrary file inclusion attacks by ensuring only approved files can be included.</li>
         </ul>
 
-        <h3>Sanitizing User Input:</h3>
+        <h3>Input Validation:</h3>
         <ul>
-            <li>
-                <code>$user_id = intval($_POST['user_id']);</code>: This line retrieves the <code>user_id</code> from the POST data and converts it to an integer using <code>intval()</code> to ensure it's safe for database queries.
-            </li>
+            <li>When handling <code>$_GET['page']</code>, the code checks if the requested file exists in the whitelist (<code>$allowed_files</code>). This validation prevents attackers from injecting arbitrary file paths or accessing unintended files on the server.</li>
         </ul>
 
-        <h3>Database Connection and SQL Preparation:</h3>
+        <h3>Error Handling:</h3>
         <ul>
-            <li>The script assumes a database connection (<code>$conn</code>) has been previously established.</li>
-            <li>
-                <code>$sql = "SELECT user_id, user_name, email FROM users WHERE user_id = ?";</code>: Defines the SQL query to select user information based on the <code>user_id</code>.
-            </li>
-            <li>
-                <code>$stmt = $conn->prepare($sql);</code>: Prepares the SQL statement for execution.
-            </li>
+            <li>If the requested file (<code>$_GET['page']</code>) is not in the whitelist, the script exits with an error message (<code>"ERROR: File not found!"</code>). This approach stops further execution, minimizing exposure to unauthorized file inclusions.</li>
         </ul>
 
-        <h3>Binding Parameters and Executing the Query:</h3>
+</br>
+        <h3><span style="color: #D10000;">Security Considerations:</span></h3>
         <ul>
-            <li>
-                <code>$stmt->bind_param("i", $user_id);</code>: Binds the <code>user_id</code> parameter to the prepared SQL statement (<code>i</code> indicates it's an integer).
-            </li>
-            <li>
-                <code>$stmt->execute();</code>: Executes the prepared statement with the bound parameter.
-            </li>
+            <li>Ensure that the whitelist (<code>$allowed_files</code>) is regularly updated and maintained. Any changes or additions to the whitelist should be carefully reviewed to avoid unintended access to sensitive files.</li>
+            <li>Always use whitelisting over blacklisting for file inclusion. Whitelists explicitly define what is allowed, whereas blacklists attempt to block what is known to be harmful, which can be less effective against new or unknown threats.</li>
         </ul>
-
-        <h3>Binding Results and Storing Them:</h3>
-        <ul>
-            <li>
-                <code>$stmt->bind_result($id, $username, $email);</code>: Binds variables (<code>$id</code>, <code>$username</code>, <code>$email</code>) to the prepared statement to store the result.
-            </li>
-            <li>
-                <code>$stmt->store_result();</code>: Stores the result set from the prepared statement.
-            </li>
-        </ul>
-
-        <h3>Processing the Query Results:</h3>
-        <ul>
-            <li>
-                <code>if ($stmt->num_rows > 0) { ... }</code>: Checks if any rows were returned by the query.
-            </li>
-            <li>
-                <code>while ($stmt->fetch()) { ... }</code>: Iterates through the result set. Assuming only one user is expected (based on <code>user_id</code> uniqueness), it retrieves and prints user information.
-            </li>
-        </ul>
-
-        <h3>Outputting User Information:</h3>
-        <ul>
-            <li>
-                Inside the <code>while</code> loop, it echoes HTML to display user information (ID, Username, Email). <code>htmlspecialchars()</code> is used to prevent XSS (cross-site scripting) attacks by escaping special characters in the output.
-            </li>
-        </ul>
-
-        <h3>Handling No Results:</h3>
-        <ul>
-            <li>
-                If no user is found (<code>$stmt->num_rows <= 0</code>), it outputs a message indicating no user was found with the provided <code>user_id</code>.
-            </li>
-        </ul>
-
-        <h3>Closing Resources:</h3>
-        <ul>
-            <li>
-                <code>$stmt->close();</code>: Closes the prepared statement to free up resources.
-            </li>
-            <li>
-                <code>$conn->close();</code>: Closes the database connection once the operations are complete.
-            </li>
-        </ul>
-        </br>
-        <h3><span style="color: #D10000;">Security Note:</span></h3>
-        <p>
-            Always sanitize and validate user inputs (<code>$user_id</code> in this case) to prevent SQL injection attacks. Using prepared statements (<code>$stmt->prepare()</code>, <code>$stmt->bind_param()</code>) helps mitigate these risks.
-        </p>
 
     </div>
+
 
 
 </body>

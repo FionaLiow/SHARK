@@ -56,84 +56,44 @@
     </div>
     <div class="explanation">
 
-        <h3>Form Handling:</h3>
+        <h3>Initial Check (<code>isset($_GET['page'])</code>):</h3>
         <ul>
-            <li>
-                The form uses the POST method, so when the form is submitted, the PHP script checks if the request method is POST.
-            </li>
+            <li>Checks if the <code>page</code> parameter is present in the GET request.</li>
         </ul>
 
-        <h3>Sanitization:</h3>
+        <h3>Input Validation (<code>strpos($file, 'profile') === false</code>):</h3>
         <ul>
-            <li>
-                The selected user ID is retrieved from the form submission (<code>$id = $_POST['user_id_opt'];</code>).
-            </li>
-            <li>
-                To prevent SQL injection attacks, certain substrings ("--" and "or") are removed from the submitted user ID using <code>str_replace</code>.
-            </li>
+            <li>Uses <code>strpos</code> to check if the value of <code>$file</code> (the value of <code>page</code> parameter) contains the substring <code>'profile'</code>.</li>
+            <li>If the substring <code>'profile'</code> is not found, it indicates an error because only files with <code>'profile'</code> in their name are allowed.</li>
+            <li>Outputs an error message ("<code>ERROR: File not found!</code>") and exits the script if the condition is true.</li>
         </ul>
 
-        <h3>SQL Query:</h3>
+        <h3>File Inclusion (<code>include $verified_file;</code>):</h3>
         <ul>
-            <li>
-                An SQL query is constructed to select the <code>user_id</code>, <code>user_name</code>, and <code>email</code> from the <code>users</code> table where the <code>user_id</code> matches the sanitized user ID. The <code>LIMIT 1</code> clause ensures that only one result is returned.
-            </li>
+            <li>If the input validation passes (i.e., <code>$file</code> contains <code>'profile'</code>), removes potentially dangerous substrings like "<code>http://</code>", "<code>https://</code>", "<code>../</code>", "<code>..\</code>" from <code>$file</code> to ensure safe file inclusion.</li>
+            <li>Includes the validated file (<code>$verified_file</code>) within the HTML structure.</li>
         </ul>
 
-        <h3>Executing the Query:</h3>
+        <h3>Back Link (<code>&lt;a href="../High/file-inclusion.php"&gt;Back&lt;/a&gt;</code>):</h3>
         <ul>
-            <li>
-                The query is executed using <code>mysqli_query</code>.
-            </li>
-            <li>
-                If the query is successful and there are results (<code>mysqli_num_rows($result) > 0</code>), a loop iterates through the results and retrieves the user information.
-            </li>
+            <li>Provides a link labeled "Back" that allows the user to return to a specified location (<code>../High/file-inclusion.php</code> in this case).</li>
         </ul>
 
-        <h3>Display Results:</h3>
+        <h3>Profile Links (if <code>$_GET['page']</code> is not set):</h3>
         <ul>
-            <li>
-                The retrieved user information is formatted as HTML and appended to the <code>$html</code> variable.
-            </li>
-            <li>
-                If no user is found, the <code>$html</code> variable is set to display a "No user found" message.
-            </li>
+            <li>Displays a set of profile links if the <code>page</code> parameter is not provided in the GET request.</li>
+            <li>Each link (<code>?page=profile1.php</code>, <code>?page=profile2.php</code>, <code>?page=profile3.php</code>) points to a specific profile page.</li>
         </ul>
-
-        <h3>Resource Management:</h3>
+</br>
+        <h3><span style="color: #D10000;">Security Considerations:</span></h3>
         <ul>
-            <li>
-                The memory associated with the result set is freed using <code>mysqli_free_result($result)</code>.
-            </li>
-            <li>
-                The database connection is closed using <code>mysqli_close($conn)</code>.
-            </li>
+            <li><strong>Input Validation:</strong> Ensures that only files with <code>'profile'</code> in their name are included, mitigating directory traversal attacks.</li>
+            <li><strong>File Inclusion:</strong> Uses sanitized <code>$verified_file</code> to include files, removing potential risks associated with URL-based input.</li>
+            <li><strong>Error Handling:</strong> Provides clear error messages and exits the script if input validation fails, preventing further execution of potentially insecure operations.</li>
         </ul>
-
-        <h3><span style="color: #D10000;">Security Note:</span></h3>
-        <p>
-            Always sanitize and validate user inputs, such as <code>$user_id_opt</code> in this case, to prevent SQL injection attacks. Simply removing characters like "--" and "or" is not sufficient; consider the following:
-        </p>
-        <ul>
-            <li>
-                <strong>Use Prepared Statements:</strong> Prefer prepared statements and parameterized queries to separate SQL logic from data and prevent malicious input from altering query structure.
-            </li>
-            <li>
-                <strong>Input Validation:</strong> Validate user inputs to ensure they conform to expected formats and ranges before using them in SQL queries. This prevents both SQL injection and other input-related vulnerabilities.
-            </li>
-            <li>
-                <strong>Escape Special Characters:</strong> If constructing SQL queries manually, use appropriate escaping functions (e.g., <code>mysqli_real_escape_string</code>) specific to your database to prevent special characters from being interpreted as part of the query.
-            </li>
-            <li>
-                <strong>Limit Privileges:</strong> Restrict database user privileges to minimize potential impact of a successful attack. Grant only necessary permissions for each user role.
-            </li>
-        </ul>
-        <p>
-            Implementing these practices ensures robust protection against SQL injection and enhances overall application security.
-        </p>
-
 
     </div>
+
 
 
 </body>
