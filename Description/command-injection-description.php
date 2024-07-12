@@ -16,3 +16,7 @@
   <li>Can lead to data theft, system compromise, and unauthorized actions.</li>
 </ul>
 </br>
+<p><strong>More information : </strong><a href="https://portswigger.net/web-security/os-command-injection" target="_blank">https://portswigger.net/web-security/os-command-injection</a></p>
+</br>
+<p><strong>More information : </strong><a href="https://owasp.org/www-community/attacks/Command_Injection" target="_blank">https://owasp.org/www-community/attacks/Command_Injection</a></p>
+</br>
