@@ -25,7 +25,7 @@ if (isset($_SESSION['username'])) {
     <hr />
     <br />
 
-    <h2><i class="fa-solid fa-triangle-exclamation" style="color: red;"></i>&nbsp WARNING!</h2><br />
+    <h2><i class="fa-solid fa-triangle-exclamation fa-shake" style="color: #ff0000;"></i>&nbsp WARNING!</h2><br />
     <p>SHARK is designed to be intentionally vulnerable. Do not upload it to your web hosting provider or any public servers, as they will be compromised.</p><br />
     <h2>It is recommended to:</h2><br />
     <p>1. Use a virtual machine (like VirtualBox or VMware) with NAT networking. </br>2. Inside the virtual machine, install XAMPP (web server and database) to run SHARK.</p>

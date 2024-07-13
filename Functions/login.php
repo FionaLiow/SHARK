@@ -38,6 +38,7 @@ function checkLogin($email, $password,  $originalChars, $substitutionChars)
 
             session_start();
             $_SESSION['username'] = $stored_username;
+            $_SESSION['email'] = $stored_email;
 
             // Redirect to home.php
             header("Location: ../home.php");

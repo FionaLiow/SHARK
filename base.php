@@ -90,7 +90,7 @@ session_start();
             ?>
                 <li><a href="../profile.php"><i class="fa-solid fa-user"></i>Profile</a></li>
                 <li><a href="../hands-on.php"><i class="fa-solid fa-flask"></i>Hands-on</a></li>
-                <li><a href="#"><i class="fa-solid fa-wand-sparkles"></i>Tutorials</a></li>
+                <li><a href="../tutorial.php"><i class="fa-solid fa-wand-sparkles"></i>Tutorials</a></li>
                 <li><a href="../tools.php"><i class="fa-solid fa-screwdriver-wrench"></i>Tools</a></li>
                 <li><a href="../home.php"><i class="fa-solid fa-circle-info"></i>About</a></li>
                 <script src="../JS/sidebar.js"></script>
@@ -99,7 +99,7 @@ session_start();
             ?>
                 <li><a href="profile.php"><i class="fa-solid fa-user"></i>Profile</a></li>
                 <li><a href="hands-on.php"><i class="fa-solid fa-flask"></i>Hands-on</a></li>
-                <li><a href="#"><i class="fa-solid fa-wand-sparkles"></i>Tutorials</a></li>
+                <li><a href="tutorial.php"><i class="fa-solid fa-wand-sparkles"></i>Tutorials</a></li>
                 <li><a href="tools.php"><i class="fa-solid fa-screwdriver-wrench"></i>Tools</a></li>
                 <li><a href="home.php"><i class="fa-solid fa-circle-info"></i>About</a></li>
             <?php
