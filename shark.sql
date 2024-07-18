@@ -17,6 +17,16 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
+
+
+-- Create database if it doesn't exist
+CREATE DATABASE IF NOT EXISTS shark;
+
+-- Use the newly created database
+USE shark;
+
+-- Rest of your SQL dump follows
+
 --
 -- Database: `shark`
 --
